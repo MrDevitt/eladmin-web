@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function getReceivesByProjectId(projectId) {
+  return request({
+    url: 'api/sysProjectReceive?projectId=' + projectId,
+    method: 'get'
+  })
+}
+
 export function add(data) {
   return request({
     url: 'api/sysProjectReceive',
@@ -24,4 +31,4 @@ export function edit(data) {
   })
 }
 
-export default { add, edit, del }
+export default { getReceivesByProjectId, add, edit, del }

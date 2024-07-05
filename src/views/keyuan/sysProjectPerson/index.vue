@@ -63,8 +63,8 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="name" label="姓名"/>
         <el-table-column prop="phoneNumber" label="手机号"/>
-        <el-table-column prop="createTime" label="记录创建的时间"/>
-        <el-table-column prop="updateTime" label="记录修改的时间"/>
+        <el-table-column prop="createTime" label="创建时间"/>
+        <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
           v-if="checkPer(['admin','sysProjectPerson:edit','sysProjectPerson:del'])"
           label="操作"

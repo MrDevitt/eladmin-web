@@ -10,7 +10,7 @@
         :before-close="crud.cancelCU"
         :visible.sync="crud.status.cu > 0"
         :title="crud.status.title"
-        width="500px"
+        width="1000px"
       >
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
           <el-form-item label="项目类型" prop="projectType">
@@ -72,12 +72,12 @@
             >
               <el-option
                 v-for="item in projectPersons"
-                :key="item.phoneNumber"
+                :key="item.id"
                 :label="item.name"
                 :value="item.id"
               >
-                <!--                <span style="float: left">{{ item.label }}</span>-->
-                <!--                <span style="float: left; color: #8492a6">{{ item.key }}</span>-->
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -93,7 +93,10 @@
                 :key="item.phoneNumber"
                 :label="item.name"
                 :value="item.id"
-              />
+              >
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="甲方负责人">
@@ -108,7 +111,10 @@
                 :key="item.phoneNumber"
                 :label="item.name"
                 :value="item.id"
-              />
+              >
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="甲方领导">
@@ -123,7 +129,10 @@
                 :key="item.phoneNumber"
                 :label="item.name"
                 :value="item.id"
-              />
+              >
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="发票类型" prop="invoiceType">
@@ -173,6 +182,10 @@
               label="请输入"
             />
           </el-form-item>
+          <el-form-item label="收款情况">
+            <sys-project-receive :project-id="currentProjectId" :project-receives="projectReceives"
+            ></sys-project-receive>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="text" @click="crud.cancelCU">取消</el-button>
@@ -195,23 +208,23 @@
         <el-table-column prop="partyA" label="甲方名称"/>
         <el-table-column prop="partyB" label="乙方名称"/>
         <el-table-column prop="contractNumber" label="合同编号"/>
-        <el-table-column prop="contractAmount" label="合同金额"/>
         <el-table-column prop="contactTime" label="签订时间"/>
+        <el-table-column prop="contractAmount" label="合同金额"/>
+        <el-table-column prop="receiveAmount" label="收款金额"/>
         <el-table-column prop="projectStartTime" label="开工时间"/>
         <el-table-column prop="projectFinishTime" label="竣工时间"/>
-        <el-table-column prop="salesPerson" label="业务人员"/>
-        <el-table-column prop="technicalPerson" label="技术人员"/>
-        <el-table-column prop="partyAPerson" label="甲方负责人"/>
-        <el-table-column prop="partyALeader" label="甲方领导"/>
+        <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
+        <el-table-column prop="technicalPerson" label="技术人员" :formatter="formatProjectPerson"/>
+        <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson"/>
+        <el-table-column prop="partyALeader" label="甲方领导" :formatter="formatProjectPerson"/>
         <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType"/>
         <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"/>
         <el-table-column prop="salesPercent" label="业务中心百分比"/>
         <el-table-column prop="technicalPercent" label="技术中心百分比"/>
         <el-table-column prop="managementPercent" label="管理中心百分比"/>
         <el-table-column prop="presidentPercent" label="总裁办百分比"/>
-        <el-table-column prop="receiveAmount" label="收款金额"/>
-        <el-table-column prop="createTime" label="记录创建的时间"/>
-        <el-table-column prop="updateTime" label="记录修改的时间"/>
+        <el-table-column prop="createTime" label="创建时间"/>
+        <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
           v-if="checkPer(['admin','sysProjectDetail:edit','sysProjectDetail:del'])"
           label="操作"
@@ -240,6 +253,8 @@ import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
+import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
+import { getReceivesByProjectId } from '@/api/keyuan/sysProjectReceive'
 
 const defaultForm = {
   id: null,
@@ -269,7 +284,7 @@ const defaultForm = {
 }
 export default {
   name: 'SysProjectDetail',
-  components: { pagination, crudOperation, rrOperation, udOperation },
+  components: { SysProjectReceive, pagination, crudOperation, rrOperation, udOperation },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   cruds() {
     return CRUD({
@@ -337,20 +352,38 @@ export default {
         { value: 2, label: '设计' },
         { value: 3, label: '其他' }
       ],
-      projectPersons: []
+      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, projectReceives: null
     }
   },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
+      this.getProjectPersons(true)
       return true
     },
     [CRUD.HOOK.beforeToCU]() {
       this.getProjectPersons()
     },
-    getProjectPersons() {
+    [CRUD.HOOK.beforeToEdit]() {
+      this.currentProjectId = this.form.id
+      getReceivesByProjectId(this.currentProjectId).then(res => {
+        console.log(res)
+        this.projectReceives = res.content.slice()
+      })
+    },
+    [CRUD.HOOK.beforeToAdd]() {
+      this.currentProjectId = null
+      this.projectReceives = null
+    },
+    getProjectPersons(refresh = false) {
       getAllProjectPerson().then(res => {
-        this.projectPersons = res.content
+        this.projectPersons = res.content.slice()
+        if (refresh) {
+          this.projectPersonNameMap = this.projectPersons.reduce(function(map, obj) {
+            map[obj.id] = obj.name
+            return map
+          }, {})
+        }
       }).catch(() => {
       })
     },
@@ -377,6 +410,9 @@ export default {
         default:
           return 'unknown'
       }
+    },
+    formatProjectPerson(row, column, id) {
+      return this.projectPersonNameMap[id]
     }
   }
 }

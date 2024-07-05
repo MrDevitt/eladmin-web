@@ -13,6 +13,13 @@ export function getAllProjectPerson() {
   })
 }
 
+export function getProjectPersonById(id) {
+  return request({
+    url: 'api/sysProjectPerson?id=' + id,
+    method: 'get'
+  })
+}
+
 export function add(data) {
   return request({
     url: 'api/sysProjectPerson',
