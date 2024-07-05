@@ -30,6 +30,21 @@
           <el-form-item label="项目名" prop="projectName">
             <el-input v-model="form.projectName" style="width: 370px;"/>
           </el-form-item>
+          <el-form-item label="项目地址" prop="projectRegion">
+            <el-select
+              v-model="form.projectRegion"
+              filterable
+              style="width: 178px"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in projectRegions"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+          </el-form-item>
           <el-form-item label="甲方名称" prop="partyA">
             <el-input v-model="form.partyA" style="width: 370px;"/>
           </el-form-item>
@@ -40,11 +55,11 @@
             <el-input v-model="form.contractNumber" style="width: 370px;"/>
           </el-form-item>
           <el-form-item label="合同金额" prop="contractAmount">
-            <el-input v-model="form.contractAmount" style="width: 370px;"/>
+            <el-input-number v-model="form.contractAmount" :precision="2" :step="0.1"></el-input-number>
           </el-form-item>
-          <el-form-item label="签订时间" prop="contactTime">
+          <el-form-item label="签订时间" prop="contractTime">
             <el-date-picker
-              v-model="form.contactTime"
+              v-model="form.contractTime"
               type="date"
               placeholder="选择日期"
             />
@@ -150,7 +165,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="备注">
-            <el-input v-model="form.remark" style="width: 370px;"/>
+            <el-input v-model="form.remark" type="textarea" style="width: 370px;"/>
           </el-form-item>
           <el-form-item label="业务中心百分比" prop="salesPercent">
             <el-input-number v-model="form.salesPercent" :min="1" :max="100" :step="5" label="请输入"/>
@@ -205,12 +220,13 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="projectType" label="项目类型" :formatter="formatProjectType"/>
         <el-table-column prop="projectName" label="项目名"/>
+        <el-table-column prop="projectRegion" label="项目地址"/>
         <el-table-column prop="partyA" label="甲方名称"/>
         <el-table-column prop="partyB" label="乙方名称"/>
         <el-table-column prop="contractNumber" label="合同编号"/>
-        <el-table-column prop="contactTime" label="签订时间"/>
-        <el-table-column prop="contractAmount" label="合同金额"/>
-        <el-table-column prop="receiveAmount" label="收款金额"/>
+        <el-table-column prop="contractTime" label="签订时间"/>
+        <el-table-column prop="contractAmount" label="合同金额" :formatter="formatPrice"/>
+        <el-table-column prop="receiveAmount" label="收款金额" :formatter="formatPrice"/>
         <el-table-column prop="projectStartTime" label="开工时间"/>
         <el-table-column prop="projectFinishTime" label="竣工时间"/>
         <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
@@ -264,7 +280,7 @@ const defaultForm = {
   partyB: null,
   contractNumber: null,
   contractAmount: null,
-  contactTime: null,
+  contractTime: null,
   projectStartTime: null,
   projectFinishTime: null,
   salesPerson: null,
@@ -309,6 +325,9 @@ export default {
         projectName: [
           { required: true, message: '项目名不能为空', trigger: 'blur' }
         ],
+        projectRegion: [
+          { required: true, message: '项目地址不能为空', trigger: 'blur' }
+        ],
         partyA: [
           { required: true, message: '甲方名称不能为空', trigger: 'blur' }
         ],
@@ -321,7 +340,7 @@ export default {
         contractAmount: [
           { required: true, message: '合同金额不能为空', trigger: 'blur' }
         ],
-        contactTime: [
+        contractTime: [
           { required: true, message: '签订时间不能为空', trigger: 'blur' }
         ],
         salesPerson: [
@@ -352,7 +371,8 @@ export default {
         { value: 2, label: '设计' },
         { value: 3, label: '其他' }
       ],
-      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, projectReceives: null
+      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, projectReceives: null,
+      projectRegions: ['日喀则', '拉萨', '阿里', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马']
     }
   },
   methods: {
@@ -363,6 +383,7 @@ export default {
     },
     [CRUD.HOOK.beforeToCU]() {
       this.getProjectPersons()
+      this.form.contractAmount /= 100
     },
     [CRUD.HOOK.beforeToEdit]() {
       this.currentProjectId = this.form.id
@@ -374,6 +395,10 @@ export default {
     [CRUD.HOOK.beforeToAdd]() {
       this.currentProjectId = null
       this.projectReceives = null
+    },
+    [CRUD.HOOK.beforeSubmit]() {
+      this.form.contractAmount = Math.floor(this.form.contractAmount * 100)
+      console.log(this.form)
     },
     getProjectPersons(refresh = false) {
       getAllProjectPerson().then(res => {
@@ -413,6 +438,12 @@ export default {
     },
     formatProjectPerson(row, column, id) {
       return this.projectPersonNameMap[id]
+    },
+    formatPrice(row, column, price) {
+      if (isNaN(price) || price === null || price === 0) {
+        return 0.00
+      }
+      return (price / 100).toFixed(2)
     }
   }
 }

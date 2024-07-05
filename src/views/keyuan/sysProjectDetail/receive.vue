@@ -14,11 +14,8 @@
         width="500px"
       >
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
-          <!--          <el-form-item label="项目ID" prop="projectId">-->
-          <!--            <el-input v-model="form.projectId" style="width: 370px;" />-->
-          <!--          </el-form-item>-->
           <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input v-model="form.invoiceAmount" style="width: 370px;"/>
+            <el-input-number v-model="form.invoiceAmount" :precision="2" :step="0.1"></el-input-number>
           </el-form-item>
           <el-form-item label="开票时间" prop="invoiceTime">
             <el-date-picker
@@ -28,7 +25,7 @@
             />
           </el-form-item>
           <el-form-item label="到账金额" prop="receiveAmount">
-            <el-input v-model="form.receiveAmount" style="width: 370px;"/>
+            <el-input-number v-model="form.receiveAmount" :precision="2" :step="0.1"></el-input-number>
           </el-form-item>
           <el-form-item label="到账时间" prop="receiveTime">
             <el-date-picker
@@ -53,11 +50,9 @@
         @selection-change="crud.selectionChangeHandler"
       >
         <el-table-column type="selection" width="55"/>
-        <!--        <el-table-column prop="id" label="id" />-->
-        <!--        <el-table-column prop="projectId" label="项目ID" />-->
-        <el-table-column prop="invoiceAmount" label="开票金额"/>
+        <el-table-column prop="invoiceAmount" label="开票金额" :formatter="formatPrice"/>
         <el-table-column prop="invoiceTime" label="开票时间"/>
-        <el-table-column prop="receiveAmount" label="到账金额"/>
+        <el-table-column prop="receiveAmount" label="到账金额" :formatter="formatPrice"/>
         <el-table-column prop="receiveTime" label="到账时间"/>
         <el-table-column prop="createTime" label="创建时间"/>
         <el-table-column prop="updateTime" label="更新时间"/>
@@ -120,8 +115,6 @@ export default {
       url: 'api/sysProjectReceive',
       idField: 'id',
       sort: 'id,desc',
-      // query: { projectId: this.projectId },
-      // params: { projectId: this.projectId },
       debug: true,
       crudMethod: { ...crudSysProjectReceive }
     })
@@ -162,6 +155,8 @@ export default {
     },
     [CRUD.HOOK.beforeToCU]() {
       this.form.projectId = this.projectId
+      this.form.invoiceAmount /= 100
+      this.form.receiveAmount /= 100
     },
     [CRUD.HOOK.afterSubmit]() {
       this.getProjectReceives()
@@ -169,12 +164,20 @@ export default {
     [CRUD.HOOK.afterDelete]() {
       this.getProjectReceives()
     },
+    [CRUD.HOOK.beforeSubmit]() {
+      this.form.invoiceAmount = Math.floor(this.form.invoiceAmount * 100)
+      this.form.receiveAmount = Math.floor(this.form.receiveAmount * 100)
+    },
     getProjectReceives() {
       getReceivesByProjectId(this.projectId).then(res => {
         this.projectReceives = res.content.slice()
-        console.log('projectReceives')
-        console.log(this.projectReceives)
       })
+    },
+    formatPrice(row, column, price) {
+      if (isNaN(price) || price === null || price === 0) {
+        return 0.00
+      }
+      return (price / 100).toFixed(2)
     }
   }
 }

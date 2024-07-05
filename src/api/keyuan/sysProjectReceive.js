@@ -1,6 +1,9 @@
 import request from '@/utils/request'
 
 export function getReceivesByProjectId(projectId) {
+  if (projectId === null) {
+    return {}
+  }
   return request({
     url: 'api/sysProjectReceive?projectId=' + projectId,
     method: 'get'
