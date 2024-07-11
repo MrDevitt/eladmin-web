@@ -1,79 +1,101 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-editor-container">
-      <github-corner class="github-corner"/>
-
-      <panel-group @handleSetLineChartData="handleSetLineChartData"/>
-
-      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-        <line-chart :chart-data="lineChartData"/>
-      </el-row>
-      <el-row :gutter="32">
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <radar-chart/>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <pie-chart/>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <bar-chart/>
-          </div>
-        </el-col>
+      <panel-group :show-data="contractTotalData"/>
+      <el-row :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <category :chart-option-promise="contractChartOptionPromise"/>
+        </div>
       </el-row>
     </div>
   </div>
 </template>
 
 <script>
-import GithubCorner from '@/components/GithubCorner'
 import PanelGroup from '../../dashboard/PanelGroup'
-import LineChart from '../../dashboard/LineChart'
-import RadarChart from '@/components/Echarts/RadarChart'
-import PieChart from '@/components/Echarts/PieChart'
-import BarChart from '@/components/Echarts/BarChart'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import { getStatistics } from '@/api/keyuan/sysProjectDetail'
+import Category from '@/components/Echarts/Category'
 
 export default {
   name: 'Dashboard',
   components: {
-    GithubCorner,
-    PanelGroup,
-    LineChart,
-    RadarChart,
-    PieChart,
-    BarChart
+    Category,
+    PanelGroup
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      contractChartOptionPromise: getStatistics().then(res => {
+        const statisticsOption = JSON.parse(JSON.stringify(res.contractChartOption))
+        statisticsOption.baseOption = this.mergeBaseOption(statisticsOption.baseOption)
+        // console.log(statisticsOption)
+        return statisticsOption
+      }),
+      contractTotalData: [
+        { text: '检测', value: 0, duration: 2600, icon: 'money' },
+        { text: '监理', value: 0, duration: 3000, icon: 'money' },
+        { text: '设计', value: 0, duration: 3200, icon: 'money' },
+        { text: '其他', value: 0, duration: 3600, icon: 'money' }
+      ]
     }
+  },
+  mounted() {
+    getStatistics().then(res => {
+      for (const data of this.contractTotalData) {
+        const newValue = res.contractTotalByType[data.text]
+        if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
+          data.value = res.contractTotalByType[data.text]
+        }
+      }
+    })
   },
   methods: {
     handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+    },
+    mergeBaseOption(newOption) {
+      const option = {
+        title: {
+          subtext: '数据来自项目明细'
+        },
+        tooltip: {},
+        calculable: true,
+        grid: {
+          top: 80,
+          bottom: 100,
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow',
+              label: {
+                show: true,
+                formatter: function(params) {
+                  return params.value.replace('\n', '')
+                }
+              }
+            }
+          }
+        },
+        xAxis: [
+          {
+            type: 'category',
+            axisLabel: {
+              interval: 0,
+              rotate: 45
+            },
+            data: [
+              '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月',
+              '九月', '十月', '十一月', '十二月'
+            ],
+            splitLine: { show: false }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            name: '总额（元）'
+          }
+        ]
+      }
+      return Object.assign(option, newOption)
     }
   }
 }

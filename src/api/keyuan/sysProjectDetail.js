@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function getStatistics() {
+  return request({
+    url: 'api/sysProjectDetail/statistics',
+    method: 'get'
+  })
+}
+
 export function add(data) {
   return request({
     url: 'api/sysProjectDetail',

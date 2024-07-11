@@ -3,52 +3,56 @@
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-people">
-          <svg-icon icon-class="peoples" class-name="card-panel-icon" />
+          <svg-icon :icon-class="showData[0].icon" class-name="card-panel-icon"/>
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">
-            New Visits
+          <div class="card-panel-text" v-text="showData[0].text">
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :decimals="2" :start-val="0" :end-val="showData[0].value" :duration="showData[0].duration"
+                    class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('messages')">
         <div class="card-panel-icon-wrapper icon-message">
-          <svg-icon icon-class="message" class-name="card-panel-icon" />
+          <svg-icon :icon-class="showData[1].icon" class-name="card-panel-icon"/>
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">
-            Messages
+          <div class="card-panel-text" v-text="showData[1].text">
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to :decimals="2" :start-val="0" :end-val="showData[1].value" :duration="showData[1].duration"
+                    class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('purchases')">
         <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="money" class-name="card-panel-icon" />
+          <svg-icon :icon-class="showData[2].icon" class-name="card-panel-icon"/>
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">
-            Purchases
+          <div class="card-panel-text" v-text="showData[2].text">
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to :decimals="2" :start-val="0" :end-val="showData[2].value" :duration="showData[2].duration"
+                    class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('shoppings')">
         <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
+          <svg-icon :icon-class="showData[3].icon" class-name="card-panel-icon"/>
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">
-            Shoppings
+          <div class="card-panel-text" v-text="showData[3].text">
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <count-to :decimals="2" :start-val="0" :end-val="showData[3].value" :duration="showData[3].duration"
+                    class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
@@ -61,6 +65,19 @@ import CountTo from 'vue-count-to'
 export default {
   components: {
     CountTo
+  },
+  props: {
+    showData: {
+      type: Array,
+      default: function() {
+        return [
+          { text: 'New Visits', value: 102401, duration: 2600, icon: 'peoples' },
+          { text: 'Messages', value: 81212, duration: 3000, icon: 'message' },
+          { text: 'Purchases', value: 9280, duration: 3200, icon: 'money' },
+          { text: 'Shoppings', value: 13600, duration: 3600, icon: 'shopping' }
+        ]
+      }
+    }
   },
   methods: {
     handleSetLineChartData(type) {

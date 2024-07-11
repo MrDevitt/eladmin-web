@@ -2,6 +2,35 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
+      <div v-if="crud.props.searchToggle">
+        <!-- 搜索 -->
+        <label class="el-form-item-label">项目名</label>
+        <el-input v-model="query.projectName" clearable placeholder="项目名" style="width: 185px;" class="filter-item"
+                  @keyup.enter.native="crud.toQuery"
+        />
+        <label class="el-form-item-label">业务人员</label>
+        <el-select
+          v-model="query.salesPerson"
+          filterable
+          clearable
+          style="width: 178px"
+          placeholder="业务人员"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in projectPersons"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          >
+            <span style="float: left">{{ item.name }}</span>
+            <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
+          </el-option>
+        </el-select>
+        <!--        <el-input v-model="query.salesPerson" clearable placeholder="业务人员" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />-->
+        <rrOperation :crud="crud"/>
+      </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
       <crudOperation :permission="permission"/>
       <!--表单组件-->
