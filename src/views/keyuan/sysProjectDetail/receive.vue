@@ -15,7 +15,7 @@
       >
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
           <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input-number v-model="form.invoiceAmount" :precision="2" :step="0.1"></el-input-number>
+            <el-input-number v-model="form.invoiceAmount" :precision="2" :step="0.1"/>
           </el-form-item>
           <el-form-item label="开票时间" prop="invoiceTime">
             <el-date-picker
@@ -25,7 +25,7 @@
             />
           </el-form-item>
           <el-form-item label="到账金额" prop="receiveAmount">
-            <el-input-number v-model="form.receiveAmount" :precision="2" :step="0.1"></el-input-number>
+            <el-input-number v-model="form.receiveAmount" :precision="2" :step="0.1"/>
           </el-form-item>
           <el-form-item label="到账时间" prop="receiveTime">
             <el-date-picker
@@ -44,7 +44,7 @@
       <el-table
         ref="table"
         v-loading="crud.loading"
-        :data="projectReceives"
+        :data="crud.data"
         size="small"
         style="width: 100%;"
         @selection-change="crud.selectionChangeHandler"
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import crudSysProjectReceive, { getReceivesByProjectId } from '@/api/keyuan/sysProjectReceive'
+import crudSysProjectReceive from '@/api/keyuan/sysProjectReceive'
 import CRUD, { crud, form, header, presenter } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
@@ -103,10 +103,6 @@ export default {
     projectId: {
       type: [Number, null],
       default: null
-    },
-    projectReceives: {
-      type: [Array, null],
-      default: null
     }
   },
   cruds() {
@@ -116,6 +112,7 @@ export default {
       idField: 'id',
       sort: 'id,desc',
       debug: true,
+      params: { 'projectId': this.propsData.projectId },
       crudMethod: { ...crudSysProjectReceive }
     })
   },
@@ -127,9 +124,6 @@ export default {
         del: ['admin', 'sysProjectReceive:del']
       },
       rules: {
-        // projectId: [
-        //   { required: true, message: '项目ID不能为空', trigger: 'blur' }
-        // ],
         invoiceAmount: [
           { required: true, message: '开票金额不能为空', trigger: 'blur' }
         ],
@@ -148,9 +142,9 @@ export default {
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
-      // this.getProjectReceives()
-      // console.log(this.crud)
-      this.getProjectReceives()
+      console.log(this.projectId)
+      this.crud.params.projectId = this.projectId
+      console.log(this.crud)
       return this.projectId !== null
     },
     [CRUD.HOOK.beforeToCU]() {
@@ -158,20 +152,9 @@ export default {
       this.form.invoiceAmount /= 100
       this.form.receiveAmount /= 100
     },
-    [CRUD.HOOK.afterSubmit]() {
-      this.getProjectReceives()
-    },
-    [CRUD.HOOK.afterDelete]() {
-      this.getProjectReceives()
-    },
     [CRUD.HOOK.beforeSubmit]() {
       this.form.invoiceAmount = Math.floor(this.form.invoiceAmount * 100)
       this.form.receiveAmount = Math.floor(this.form.receiveAmount * 100)
-    },
-    getProjectReceives() {
-      getReceivesByProjectId(this.projectId).then(res => {
-        this.projectReceives = res.content.slice()
-      })
     },
     formatPrice(row, column, price) {
       if (isNaN(price) || price === null || price === 0) {

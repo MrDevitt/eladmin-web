@@ -5,8 +5,13 @@
       <div v-if="crud.props.searchToggle">
         <!-- 搜索 -->
         <label class="el-form-item-label">项目名</label>
-        <el-input v-model="query.projectName" clearable placeholder="项目名" style="width: 185px;" class="filter-item"
-                  @keyup.enter.native="crud.toQuery"
+        <el-input
+          v-model="query.projectName"
+          clearable
+          placeholder="项目名"
+          style="width: 185px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
         />
         <label class="el-form-item-label">业务人员</label>
         <el-select
@@ -25,10 +30,10 @@
             :value="item.id"
           >
             <span style="float: left">{{ item.name }}</span>
-            <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
+            <span style="float: left color: #8492a6">{{ item.phoneNumber }}</span>
           </el-option>
         </el-select>
-        <!--        <el-input v-model="query.salesPerson" clearable placeholder="业务人员" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />-->
+        <!--        <el-input v-model="query.salesPerson" clearable placeholder="业务人员" style="width: 185px" class="filter-item" @keyup.enter.native="crud.toQuery" />-->
         <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
@@ -57,7 +62,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="项目名" prop="projectName">
-            <el-input v-model="form.projectName" style="width: 370px;"/>
+            <el-input v-model="form.projectName" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="项目地址" prop="projectRegion">
             <el-select
@@ -75,16 +80,16 @@
             </el-select>
           </el-form-item>
           <el-form-item label="甲方名称" prop="partyA">
-            <el-input v-model="form.partyA" style="width: 370px;"/>
+            <el-input v-model="form.partyA" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="乙方名称" prop="partyB">
-            <el-input v-model="form.partyB" style="width: 370px;"/>
+            <el-input v-model="form.partyB" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="合同编号" prop="contractNumber">
-            <el-input v-model="form.contractNumber" style="width: 370px;"/>
+            <el-input v-model="form.contractNumber" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="合同金额" prop="contractAmount">
-            <el-input-number v-model="form.contractAmount" :precision="2" :step="0.1"></el-input-number>
+            <el-input-number v-model="form.contractAmount" :precision="2" :step="0.1"/>
           </el-form-item>
           <el-form-item label="签订时间" prop="contractTime">
             <el-date-picker
@@ -92,6 +97,27 @@
               type="date"
               placeholder="选择日期"
             />
+          </el-form-item>
+          <el-form-item label="收合同时间" prop="contractReceiveTime">
+            <el-date-picker
+              v-model="form.contractReceiveTime"
+              type="date"
+              placeholder="选择日期"
+            />
+          </el-form-item>
+          <el-form-item label="合同付款方式" prop="contractPayWay">
+            <el-select
+              v-model="form.contractPayWay"
+              style="width: 178px"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in contractPayWays"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="开工时间">
             <el-date-picker
@@ -106,6 +132,9 @@
               type="date"
               placeholder="选择日期"
             />
+          </el-form-item>
+          <el-form-item label="项目进度" prop="projectProgress">
+            <el-input-number v-model="form.projectProgress" :min="0" :max="100" :step="10" label="请输入"/>
           </el-form-item>
           <el-form-item label="业务人员" prop="salesPerson">
             <el-select
@@ -161,24 +190,6 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="甲方领导">
-            <el-select
-              v-model="form.partyALeader"
-              filterable
-              style="width: 178px"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in projectPersons"
-                :key="item.phoneNumber"
-                :label="item.name"
-                :value="item.id"
-              >
-                <span style="float: left">{{ item.name }}</span>
-                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="发票类型" prop="invoiceType">
             <el-select
               v-model="form.invoiceType"
@@ -186,15 +197,15 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="item in [{invoiceType:0,label:'专票'},{invoiceType:1,label:'普票'}]"
-                :key="item.invoiceType"
+                v-for="item in invoiceTypes"
+                :key="item.value"
                 :label="item.label"
-                :value="item.invoiceType"
+                :value="item.value"
               />
             </el-select>
           </el-form-item>
           <el-form-item label="备注">
-            <el-input v-model="form.remark" type="textarea" style="width: 370px;"/>
+            <el-input v-model="form.remark" type="textarea" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="业务中心百分比" prop="salesPercent">
             <el-input-number v-model="form.salesPercent" :min="1" :max="100" :step="5" label="请输入"/>
@@ -227,8 +238,7 @@
             />
           </el-form-item>
           <el-form-item label="收款情况">
-            <sys-project-receive :project-id="currentProjectId" :project-receives="projectReceives"
-            ></sys-project-receive>
+            <sys-project-receive :project-id="currentProjectId"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -242,7 +252,7 @@
         v-loading="crud.loading"
         :data="crud.data"
         size="small"
-        style="width: 100%;"
+        style="width: 100%"
         @selection-change="crud.selectionChangeHandler"
       >
         <el-table-column type="selection" width="55"/>
@@ -254,14 +264,26 @@
         <el-table-column prop="partyB" label="乙方名称"/>
         <el-table-column prop="contractNumber" label="合同编号"/>
         <el-table-column prop="contractTime" label="签订时间"/>
+        <el-table-column prop="contractReceiveTime" label="收合同时间"/>
+        <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay"/>
         <el-table-column prop="contractAmount" label="合同金额" :formatter="formatPrice"/>
-        <el-table-column prop="receiveAmount" label="收款金额" :formatter="formatPrice"/>
+        <el-table-column prop="shouldReceiveAmount" label="应收款金额" :formatter="formatPrice"/>
+        <el-table-column label="收款金额">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="clickReceive(scope)">
+              {{ formatPrice(0, 0, scope.row.receiveAmount) }}
+            </el-button>
+            <el-dialog title="收款详情" :visible.sync="dialogTableVisible[scope.$index]">
+              <sys-project-receive ref="receiveDetail" :project-id="receiveProjectId"/>
+            </el-dialog>
+          </template>
+        </el-table-column>
+        <el-table-column prop="projectProgress" label="项目进度"/>
         <el-table-column prop="projectStartTime" label="开工时间"/>
         <el-table-column prop="projectFinishTime" label="竣工时间"/>
         <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
         <el-table-column prop="technicalPerson" label="技术人员" :formatter="formatProjectPerson"/>
         <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson"/>
-        <el-table-column prop="partyALeader" label="甲方领导" :formatter="formatProjectPerson"/>
         <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType"/>
         <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"/>
         <el-table-column prop="salesPercent" label="业务中心百分比"/>
@@ -315,7 +337,6 @@ const defaultForm = {
   salesPerson: null,
   technicalPerson: null,
   partyAPerson: null,
-  partyALeader: null,
   invoiceType: null,
   remark: null,
   salesPercent: 30,
@@ -325,7 +346,12 @@ const defaultForm = {
   receiveAmount: null,
   isDeleted: null,
   createTime: null,
-  updateTime: null
+  updateTime: null,
+  projectRegion: null,
+  contractReceiveTime: null,
+  contractPayWay: null,
+  shouldReceiveAmount: null,
+  projectProgress: 0
 }
 export default {
   name: 'SysProjectDetail',
@@ -392,6 +418,9 @@ export default {
         ],
         presidentPercent: [
           { required: true, message: '总裁办百分比不能为空', trigger: 'blur' }
+        ],
+        contractPayWay: [
+          { required: true, message: '合同付款方式不能为空', trigger: 'blur' }
         ]
       },
       projectTypes: [
@@ -400,8 +429,19 @@ export default {
         { value: 2, label: '设计' },
         { value: 3, label: '其他' }
       ],
-      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, projectReceives: null,
-      projectRegions: ['日喀则', '拉萨', '阿里', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马']
+      invoiceTypes: [
+        { value: 0, label: '专票' },
+        { value: 1, label: '普票' }
+      ],
+      contractPayWays: [
+        { value: 0, label: '签合同50，完工结清' },
+        { value: 1, label: '一次性付清' },
+        { value: 2, label: '签合同30进度50付30完工结清' },
+        { value: 3, label: '按进度拨付' }
+      ],
+      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
+      projectRegions: ['日喀则', '拉萨', '阿里', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马'],
+      dialogTableVisible: []
     }
   },
   methods: {
@@ -416,14 +456,9 @@ export default {
     },
     [CRUD.HOOK.beforeToEdit]() {
       this.currentProjectId = this.form.id
-      getReceivesByProjectId(this.currentProjectId).then(res => {
-        console.log(res)
-        this.projectReceives = res.content.slice()
-      })
     },
     [CRUD.HOOK.beforeToAdd]() {
       this.currentProjectId = null
-      this.projectReceives = null
     },
     [CRUD.HOOK.beforeSubmit]() {
       this.form.contractAmount = Math.floor(this.form.contractAmount * 100)
@@ -442,28 +477,10 @@ export default {
       })
     },
     formatProjectType(row, column, id) {
-      switch (id) {
-        case 0:
-          return '检测'
-        case 1:
-          return '监理'
-        case 2:
-          return '设计'
-        case 3:
-          return '其他'
-        default:
-          return 'unknown'
-      }
+      return this.projectTypes[id].label
     },
     formatInvoiceType(row, column, id) {
-      switch (id) {
-        case 0:
-          return '专票'
-        case 1:
-          return '普票'
-        default:
-          return 'unknown'
-      }
+      return this.invoiceTypes[id].label
     },
     formatProjectPerson(row, column, id) {
       return this.projectPersonNameMap[id]
@@ -473,6 +490,14 @@ export default {
         return 0.00
       }
       return (price / 100).toFixed(2)
+    },
+    formatPayWay(row, column, id) {
+      return this.contractPayWays[id].label
+    },
+    clickReceive(scope) {
+      console.log(scope.row.id)
+      this.receiveProjectId = scope.row.id
+      this.dialogTableVisible.splice(scope.$index, 1, true)
     }
   }
 }
