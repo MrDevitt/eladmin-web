@@ -30,7 +30,7 @@
             :value="item.id"
           >
             <span style="float: left">{{ item.name }}</span>
-            <span style="float: left color: #8492a6">{{ item.phoneNumber }}</span>
+            <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
           </el-option>
         </el-select>
         <!--        <el-input v-model="query.salesPerson" clearable placeholder="业务人员" style="width: 185px" class="filter-item" @keyup.enter.native="crud.toQuery" />-->
@@ -72,7 +72,7 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="item in projectRegions"
+                v-for="item in generateRegion(form.projectType)"
                 :key="item"
                 :label="item"
                 :value="item"
@@ -237,6 +237,13 @@
               label="请输入"
             />
           </el-form-item>
+          <el-form-item label="创建日期" prop="createTime">
+            <el-date-picker
+              v-model="form.createTime"
+              type="date"
+              placeholder="选择日期"
+            />
+          </el-form-item>
           <el-form-item label="收款情况">
             <sys-project-receive :project-id="currentProjectId"/>
           </el-form-item>
@@ -321,7 +328,6 @@ import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
-import { getReceivesByProjectId } from '@/api/keyuan/sysProjectReceive'
 
 const defaultForm = {
   id: null,
@@ -498,6 +504,12 @@ export default {
       console.log(scope.row.id)
       this.receiveProjectId = scope.row.id
       this.dialogTableVisible.splice(scope.$index, 1, true)
+    },
+    generateRegion(projectType) {
+      if (projectType === 1) {
+        return ['日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马']
+      }
+      return ['日喀则', '拉萨', '阿里']
     }
   }
 }

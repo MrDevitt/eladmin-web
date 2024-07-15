@@ -1,32 +1,5 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-editor-container">
-      <github-corner class="github-corner" />
-
-      <panel-group @handleSetLineChartData="handleSetLineChartData" />
-
-      <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-        <line-chart :chart-data="lineChartData" />
-      </el-row>
-      <el-row :gutter="32">
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <radar-chart />
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <pie-chart />
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="24" :lg="8">
-          <div class="chart-wrapper">
-            <bar-chart />
-          </div>
-        </el-col>
-      </el-row>
-    </div>
-  </div>
+  <sys-project-statistics/>
 </template>
 
 <script>
@@ -36,6 +9,7 @@ import LineChart from './dashboard/LineChart'
 import RadarChart from '@/components/Echarts/RadarChart'
 import PieChart from '@/components/Echarts/PieChart'
 import BarChart from '@/components/Echarts/BarChart'
+import SysProjectStatistics from '@/views/keyuan/sysProjectStatistics'
 
 const lineChartData = {
   newVisitis: {
@@ -59,6 +33,7 @@ const lineChartData = {
 export default {
   name: 'Dashboard',
   components: {
+    SysProjectStatistics,
     GithubCorner,
     PanelGroup,
     LineChart,

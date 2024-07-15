@@ -1,13 +1,27 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-editor-container">
+    <el-card class="box-card" shadow="always">
+      <div slot="header" class="card-header">
+        <span>业务量总指标</span>
+      </div>
       <panel-group :show-data="contractTotalData"/>
       <el-row :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <category :chart-option-promise="contractChartOptionPromise"/>
         </div>
       </el-row>
-    </div>
+    </el-card>
+    <el-card class="box-card" shadow="always">
+      <div slot="header" class="card-header">
+        <span>收款总指标</span>
+      </div>
+      <panel-group :show-data="receiveTotalData"/>
+      <el-row :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <category :chart-option-promise="receiveChartOptionPromise"/>
+        </div>
+      </el-row>
+    </el-card>
   </div>
 </template>
 
@@ -17,7 +31,7 @@ import { getStatistics } from '@/api/keyuan/sysProjectDetail'
 import Category from '@/components/Echarts/Category'
 
 export default {
-  name: 'Dashboard',
+  name: 'SysProjectStatistics',
   components: {
     Category,
     PanelGroup
@@ -35,6 +49,18 @@ export default {
         { text: '监理', value: 0, duration: 3000, icon: 'money' },
         { text: '设计', value: 0, duration: 3200, icon: 'money' },
         { text: '其他', value: 0, duration: 3600, icon: 'money' }
+      ],
+      receiveChartOptionPromise: getStatistics().then(res => {
+        const statisticsOption = JSON.parse(JSON.stringify(res.receiveChartOption))
+        statisticsOption.baseOption = this.mergeBaseOption(statisticsOption.baseOption)
+        console.log(statisticsOption)
+        return statisticsOption
+      }),
+      receiveTotalData: [
+        { text: '检测', value: 0, duration: 2600, icon: 'money' },
+        { text: '监理', value: 0, duration: 3000, icon: 'money' },
+        { text: '设计', value: 0, duration: 3200, icon: 'money' },
+        { text: '其他', value: 0, duration: 3600, icon: 'money' }
       ]
     }
   },
@@ -44,6 +70,12 @@ export default {
         const newValue = res.contractTotalByType[data.text]
         if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
           data.value = res.contractTotalByType[data.text]
+        }
+      }
+      for (const data of this.receiveTotalData) {
+        const newValue = res.receiveTotalByType[data.text]
+        if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
+          data.value = res.receiveTotalByType[data.text]
         }
       }
     })
@@ -102,28 +134,16 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.dashboard-editor-container {
-  padding: 32px;
-  background-color: rgb(240, 242, 245);
-  position: relative;
-
-  .github-corner {
-    position: absolute;
-    top: 0;
-    border: 0;
-    right: 0;
-  }
-
-  .chart-wrapper {
-    background: #fff;
-    padding: 16px 16px 0;
-    margin-bottom: 32px;
-  }
-}
 
 @media (max-width: 1024px) {
   .chart-wrapper {
     padding: 8px;
   }
+}
+
+.card-header {
+  text-align: center;
+  color: dodgerblue;
+  font-size: x-large;
 }
 </style>
