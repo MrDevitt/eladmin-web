@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div v-if="statisticsObtained" class="dashboard-container">
     <el-card class="box-card" shadow="always">
       <div slot="header" class="card-header">
         <span>业务量总指标</span>
@@ -7,8 +7,26 @@
       <panel-group :show-data="contractTotalData"/>
       <el-row :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <category :chart-option-promise="contractChartOptionPromise"/>
+          <category :chart-option="contractChartOption"/>
         </div>
+      </el-row>
+      <el-row>
+        <el-tabs type="border-card">
+          <el-tab-pane v-for="(item, index) in statisticsData.contractByRegionTableList" :key="index"
+                       :label="item.label"
+          >
+            <statistics-table :table-data="item.data" :table-columns="item.columns"/>
+          </el-tab-pane>
+        </el-tabs>
+      </el-row>
+      <el-row>
+        <el-tabs type="border-card">
+          <el-tab-pane v-for="(item, index) in statisticsData.contractByPersonTableList" :key="index"
+                       :label="item.label"
+          >
+            <statistics-table :table-data="item.data" :table-columns="item.columns"/>
+          </el-tab-pane>
+        </el-tabs>
       </el-row>
     </el-card>
     <el-card class="box-card" shadow="always">
@@ -18,7 +36,7 @@
       <panel-group :show-data="receiveTotalData"/>
       <el-row :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <category :chart-option-promise="receiveChartOptionPromise"/>
+          <category :chart-option="receiveChartOption"/>
         </div>
       </el-row>
     </el-card>
@@ -29,43 +47,39 @@
 import PanelGroup from '../../dashboard/PanelGroup'
 import { getStatistics } from '@/api/keyuan/sysProjectDetail'
 import Category from '@/components/Echarts/Category'
+import StatisticsTable from '@/components/Statistics/StatisticsTable'
 
 export default {
   name: 'SysProjectStatistics',
   components: {
+    StatisticsTable,
     Category,
     PanelGroup
   },
   data() {
     return {
-      contractChartOptionPromise: getStatistics().then(res => {
-        const statisticsOption = JSON.parse(JSON.stringify(res.contractChartOption))
-        statisticsOption.baseOption = this.mergeBaseOption(statisticsOption.baseOption)
-        // console.log(statisticsOption)
-        return statisticsOption
-      }),
+      contractChartOption: null,
       contractTotalData: [
         { text: '检测', value: 0, duration: 2600, icon: 'money' },
         { text: '监理', value: 0, duration: 3000, icon: 'money' },
         { text: '设计', value: 0, duration: 3200, icon: 'money' },
         { text: '其他', value: 0, duration: 3600, icon: 'money' }
       ],
-      receiveChartOptionPromise: getStatistics().then(res => {
-        const statisticsOption = JSON.parse(JSON.stringify(res.receiveChartOption))
-        statisticsOption.baseOption = this.mergeBaseOption(statisticsOption.baseOption)
-        console.log(statisticsOption)
-        return statisticsOption
-      }),
+      receiveChartOption: null,
       receiveTotalData: [
         { text: '检测', value: 0, duration: 2600, icon: 'money' },
         { text: '监理', value: 0, duration: 3000, icon: 'money' },
         { text: '设计', value: 0, duration: 3200, icon: 'money' },
         { text: '其他', value: 0, duration: 3600, icon: 'money' }
-      ]
+      ], statisticsObtained: false,
+      contractRegionTables: {},
+      statisticsData: {}
     }
   },
   mounted() {
     getStatistics().then(res => {
+      console.log(res)
+      this.statisticsData = JSON.parse(JSON.stringify(res))
       for (const data of this.contractTotalData) {
         const newValue = res.contractTotalByType[data.text]
         if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
@@ -78,6 +92,14 @@ export default {
           data.value = res.receiveTotalByType[data.text]
         }
       }
+      const contractOption = JSON.parse(JSON.stringify(res.contractChartOption))
+      contractOption.baseOption = this.mergeBaseOption(contractOption.baseOption)
+      this.contractChartOption = contractOption
+
+      const receiveOption = JSON.parse(JSON.stringify(res.receiveChartOption))
+      receiveOption.baseOption = this.mergeBaseOption(receiveOption.baseOption)
+      this.receiveChartOption = receiveOption
+      this.statisticsObtained = true
     })
   },
   methods: {

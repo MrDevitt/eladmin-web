@@ -4,12 +4,44 @@
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
         <!-- 搜索 -->
+        <label class="el-form-item-label">项目类型</label>
+        <el-select
+          v-model="query.projectType"
+          clearable
+          placeholder="项目类型"
+          style="width: 100px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in projectTypes"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <label class="el-form-item-label">项目地区</label>
+        <el-select
+          v-model="query.projectRegion"
+          clearable
+          placeholder="项目地区"
+          style="width: 100px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in generateRegion(0,true)"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
         <label class="el-form-item-label">项目名</label>
         <el-input
           v-model="query.projectName"
           clearable
           placeholder="项目名"
-          style="width: 185px"
+          style="width: 160px"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         />
@@ -18,7 +50,7 @@
           v-model="query.salesPerson"
           filterable
           clearable
-          style="width: 178px"
+          style="width: 160px"
           placeholder="业务人员"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
@@ -33,7 +65,6 @@
             <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
           </el-option>
         </el-select>
-        <!--        <el-input v-model="query.salesPerson" clearable placeholder="业务人员" style="width: 185px" class="filter-item" @keyup.enter.native="crud.toQuery" />-->
         <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
@@ -64,7 +95,7 @@
           <el-form-item label="项目名" prop="projectName">
             <el-input v-model="form.projectName" style="width: 370px"/>
           </el-form-item>
-          <el-form-item label="项目地址" prop="projectRegion">
+          <el-form-item label="项目地区" prop="projectRegion">
             <el-select
               v-model="form.projectRegion"
               filterable
@@ -266,7 +297,7 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="projectType" label="项目类型" :formatter="formatProjectType"/>
         <el-table-column prop="projectName" label="项目名"/>
-        <el-table-column prop="projectRegion" label="项目地址"/>
+        <el-table-column prop="projectRegion" label="项目地区"/>
         <el-table-column prop="partyA" label="甲方名称"/>
         <el-table-column prop="partyB" label="乙方名称"/>
         <el-table-column prop="contractNumber" label="合同编号"/>
@@ -387,7 +418,7 @@ export default {
           { required: true, message: '项目名不能为空', trigger: 'blur' }
         ],
         projectRegion: [
-          { required: true, message: '项目地址不能为空', trigger: 'blur' }
+          { required: true, message: '项目地区不能为空', trigger: 'blur' }
         ],
         partyA: [
           { required: true, message: '甲方名称不能为空', trigger: 'blur' }
@@ -446,7 +477,6 @@ export default {
         { value: 3, label: '按进度拨付' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
-      projectRegions: ['日喀则', '拉萨', '阿里', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马'],
       dialogTableVisible: []
     }
   },
@@ -461,6 +491,7 @@ export default {
       this.form.contractAmount /= 100
     },
     [CRUD.HOOK.beforeToEdit]() {
+      console.log(this.crud)
       this.currentProjectId = this.form.id
     },
     [CRUD.HOOK.beforeToAdd]() {
@@ -479,7 +510,6 @@ export default {
             return map
           }, {})
         }
-      }).catch(() => {
       })
     },
     formatProjectType(row, column, id) {
@@ -501,11 +531,13 @@ export default {
       return this.contractPayWays[id].label
     },
     clickReceive(scope) {
-      console.log(scope.row.id)
       this.receiveProjectId = scope.row.id
       this.dialogTableVisible.splice(scope.$index, 1, true)
     },
-    generateRegion(projectType) {
+    generateRegion(projectType, all = false) {
+      if (all) {
+        return ['日喀则', '拉萨', '阿里', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马']
+      }
       if (projectType === 1) {
         return ['日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马']
       }

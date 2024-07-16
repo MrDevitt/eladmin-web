@@ -22,10 +22,6 @@ export default {
       type: String,
       default: '500px'
     },
-    chartOptionPromise: {
-      type: Promise,
-      default: null
-    },
     chartOption: {
       type: Object,
       default: null
@@ -57,15 +53,7 @@ export default {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
       if (this.chartOption !== null) {
-        console.log('set option')
-        console.log(this.chartOption)
         this.chart.setOption(this.chartOption)
-        return
-      }
-      if (this.chartOptionPromise !== null) {
-        this.chartOptionPromise.then(opt => {
-          this.chart.setOption(opt)
-        })
         return
       }
       const dataMap = {}
