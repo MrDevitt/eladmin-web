@@ -11,22 +11,16 @@
         </div>
       </el-row>
       <el-row>
-        <el-tabs type="border-card">
-          <el-tab-pane v-for="(item, index) in statisticsData.contractByRegionTableList" :key="index"
-                       :label="item.label"
-          >
-            <statistics-table :table-data="item.data" :table-columns="item.columns"/>
-          </el-tab-pane>
-        </el-tabs>
+        <statistics-table :tab-table-data="statisticsData.contractByRegionTableList" title="地区业务量"/>
       </el-row>
       <el-row>
-        <el-tabs type="border-card">
-          <el-tab-pane v-for="(item, index) in statisticsData.contractByPersonTableList" :key="index"
-                       :label="item.label"
-          >
-            <statistics-table :table-data="item.data" :table-columns="item.columns"/>
-          </el-tab-pane>
-        </el-tabs>
+        <statistics-table :tab-table-data="statisticsData.contractByPersonTableList" title="业务人业务量"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.contractByDepartmentTableList" title="部门业务分成"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.contractShareByPersonTableList" title="业务人业务分成"/>
       </el-row>
     </el-card>
     <el-card class="box-card" shadow="always">
@@ -38,6 +32,18 @@
         <div class="chart-wrapper">
           <category :chart-option="receiveChartOption"/>
         </div>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.receiveByRegionTableList" title="地区收款量"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.receiveByPersonTableList" title="业务人收款量"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.receiveByDepartmentTableList" title="部门收款分成"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.receiveShareByPersonTableList" title="业务人收款分成"/>
       </el-row>
     </el-card>
   </div>
@@ -103,8 +109,6 @@ export default {
     })
   },
   methods: {
-    handleSetLineChartData(type) {
-    },
     mergeBaseOption(newOption) {
       const option = {
         title: {
@@ -167,5 +171,6 @@ export default {
   text-align: center;
   color: dodgerblue;
   font-size: x-large;
+  font-weight: bolder;
 }
 </style>

@@ -1,29 +1,42 @@
 <template>
-  <el-table :data="tableData" style="width: 100%" show-summary>
-    <el-table-column v-for="(config,index) in tableColumns" :key="index" :prop="config.prop" :label="config.label"
-                     :sortable="config.sortable"
-    />
-  </el-table>
+  <el-card class="box-card2" shadow="always">
+    <div slot="header" class="card-header">
+      <span>{{ title }}</span>
+    </div>
+    <el-tabs type="border-card">
+      <el-tab-pane v-for="(item, index) in tabTableData" :key="index" :label="item.label">
+        <el-table :data="item.data" style="width: 100%" show-summary>
+          <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop" :label="config.label" sortable/>
+        </el-table>
+      </el-tab-pane>
+    </el-tabs>
+  </el-card>
 </template>
 
 <script>
 export default {
   props: {
-    tableData: {
+    tabTableData: {
       type: Array,
       default: function() {
         return []
       }
     },
-    tableColumns: {
-      type: Array,
+    title: {
+      type: String,
       default: function() {
-        return []
+        return 'title'
       }
     }
-  },
-  mounted() {
-    console.log(this)
   }
 }
 </script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+.card-header {
+  text-align: center;
+  color: dodgerblue;
+  font-size: medium;
+  font-weight: normal;
+}
+</style>
