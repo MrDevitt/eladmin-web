@@ -3,7 +3,7 @@
     <!--工具栏-->
     <div class="head-container">
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
-      <crudOperation v-if="projectId!==null" :permission="permission"/>
+      <crudOperation :permission="permission"/>
       <!--表单组件-->
       <el-dialog
         :close-on-click-modal="false"

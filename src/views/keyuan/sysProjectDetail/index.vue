@@ -15,7 +15,7 @@
         >
           <el-option
             v-for="item in projectTypes"
-            :key="item.value"
+            :key="item.label"
             :label="item.label"
             :value="item.value"
           />
@@ -86,7 +86,7 @@
             >
               <el-option
                 v-for="item in projectTypes"
-                :key="item.value"
+                :key="item.label"
                 :label="item.label"
                 :value="item.value"
               />
@@ -144,7 +144,7 @@
             >
               <el-option
                 v-for="item in contractPayWays"
-                :key="item.value"
+                :key="item.label"
                 :label="item.label"
                 :value="item.value"
               />
@@ -229,7 +229,7 @@
             >
               <el-option
                 v-for="item in invoiceTypes"
-                :key="item.value"
+                :key="item.label"
                 :label="item.label"
                 :value="item.value"
               />
@@ -275,7 +275,7 @@
               placeholder="选择日期"
             />
           </el-form-item>
-          <el-form-item label="收款情况">
+          <el-form-item v-if="currentProjectId!==null" label="收款情况">
             <sys-project-receive :project-id="currentProjectId"/>
           </el-form-item>
         </el-form>
@@ -312,7 +312,7 @@
               {{ formatPrice(0, 0, scope.row.receiveAmount) }}
             </el-button>
             <el-dialog title="收款详情" :visible.sync="dialogTableVisible[scope.$index]">
-              <sys-project-receive ref="receiveDetail" :project-id="receiveProjectId"/>
+              <sys-project-receive v-if="dialogTableVisible[scope.$index]" ref="receiveDetail" :project-id="receiveProjectId"/>
             </el-dialog>
           </template>
         </el-table-column>
@@ -468,7 +468,8 @@ export default {
       ],
       invoiceTypes: [
         { value: 0, label: '专票' },
-        { value: 1, label: '普票' }
+        { value: 1, label: '普票' },
+        { value: 2, label: '无票' }
       ],
       contractPayWays: [
         { value: 0, label: '签合同50，完工结清' },

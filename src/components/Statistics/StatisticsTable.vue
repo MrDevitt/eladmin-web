@@ -5,8 +5,8 @@
     </div>
     <el-tabs type="border-card">
       <el-tab-pane v-for="(item, index) in tabTableData" :key="index" :label="item.label">
-        <el-table :data="item.data" style="width: 100%" show-summary>
-          <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop" :label="config.label" sortable/>
+        <el-table :data="item.data" style="width: 100%" show-summary :summary-method="getSummaries">
+          <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop" :label="config.label" sortable :formatter="formatCurrency" />
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -27,6 +27,42 @@ export default {
       default: function() {
         return 'title'
       }
+    }
+  },
+  methods: {
+    formatCurrency(row, column, num) {
+      if (isNaN(num)) {
+        return num
+      }
+      num = num.toFixed(2)
+      const str = num.toString()
+      const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
+      return str.replace(reg, '$1,')
+    },
+    getSummaries(param) {
+      const { columns, data } = param
+      const sums = []
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计'
+          return
+        }
+        const values = data.map(item => Number(item[column.property]))
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr)
+            if (!isNaN(value)) {
+              return prev + curr
+            } else {
+              return prev
+            }
+          }, 0)
+          sums[index] = this.formatCurrency(0, 0, sums[index])
+        } else {
+          sums[index] = 'N/A'
+        }
+      })
+      return sums
     }
   }
 }

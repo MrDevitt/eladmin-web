@@ -2,6 +2,7 @@
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 const CompressionPlugin = require('compression-webpack-plugin')
+const fs = require('fs')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -21,6 +22,11 @@ module.exports = {
   productionSourceMap: false,
   devServer: {
     port: port,
+    https: {
+      key: fs.readFileSync('./keyuanadmin.top.key'),
+      cert: fs.readFileSync('./keyuanadmin.top.pem')
+    },
+    disableHostCheck: true,
     open: true,
     overlay: {
       warnings: false,
