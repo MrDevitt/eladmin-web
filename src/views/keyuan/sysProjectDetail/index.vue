@@ -65,6 +65,7 @@
             <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
           </el-option>
         </el-select>
+        <date-range-picker v-model="query.createTime" class="el-form-item-label" />
         <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
@@ -176,7 +177,7 @@
             >
               <el-option
                 v-for="item in projectPersons"
-                :key="item.id"
+                :key="item.id+'A'"
                 :label="item.name"
                 :value="item.id"
               >
@@ -194,7 +195,7 @@
             >
               <el-option
                 v-for="item in projectPersons"
-                :key="item.phoneNumber"
+                :key="item.id+'B'"
                 :label="item.name"
                 :value="item.id"
               >
@@ -212,7 +213,7 @@
             >
               <el-option
                 v-for="item in projectPersons"
-                :key="item.phoneNumber"
+                :key="item.id+'C'"
                 :label="item.name"
                 :value="item.id"
               >
@@ -239,12 +240,12 @@
             <el-input v-model="form.remark" type="textarea" style="width: 370px"/>
           </el-form-item>
           <el-form-item label="业务中心百分比" prop="salesPercent">
-            <el-input-number v-model="form.salesPercent" :min="1" :max="100" :step="5" label="请输入"/>
+            <el-input-number v-model="form.salesPercent" :min="0" :max="100" :step="5" label="请输入"/>
           </el-form-item>
           <el-form-item label="技术中心百分比" prop="technicalPercent">
             <el-input-number
               v-model="form.technicalPercent"
-              :min="1"
+              :min="0"
               :max="100"
               :step="5"
               label="请输入"
@@ -253,7 +254,7 @@
           <el-form-item label="管理中心百分比" prop="managementPercent">
             <el-input-number
               v-model="form.managementPercent"
-              :min="1"
+              :min="0"
               :max="100"
               :step="5"
               label="请输入"
@@ -262,7 +263,7 @@
           <el-form-item label="总裁办百分比" prop="presidentPercent">
             <el-input-number
               v-model="form.presidentPercent"
-              :min="1"
+              :min="0"
               :max="100"
               :step="5"
               label="请输入"
@@ -355,6 +356,7 @@ import crudSysProjectDetail from '@/api/keyuan/sysProjectDetail'
 import CRUD, { crud, form, header, presenter } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
+import DateRangePicker from '@/components/DateRangePicker'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
@@ -392,7 +394,7 @@ const defaultForm = {
 }
 export default {
   name: 'SysProjectDetail',
-  components: { SysProjectReceive, pagination, crudOperation, rrOperation, udOperation },
+  components: { SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   cruds() {
     return CRUD({
