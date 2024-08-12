@@ -22,6 +22,9 @@
       <el-row>
         <statistics-table :tab-table-data="statisticsData.contractShareByPersonTableList" title="业务人业务分成"/>
       </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.examContractByPersonTableList" title="检测业务人分地区业务量"/>
+      </el-row>
     </el-card>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="card-header">
@@ -44,6 +47,9 @@
       </el-row>
       <el-row>
         <statistics-table :tab-table-data="statisticsData.receiveShareByPersonTableList" title="业务人收款分成"/>
+      </el-row>
+      <el-row>
+        <statistics-table :tab-table-data="statisticsData.examReceiveByPersonTableList" title="检测业务人分地区收款量"/>
       </el-row>
     </el-card>
   </div>
