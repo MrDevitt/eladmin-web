@@ -111,7 +111,7 @@ export default {
       url: 'api/sysProjectReceive',
       idField: 'id',
       sort: 'id,desc',
-      debug: true,
+      // debug: true,
       params: { 'projectId': this.propsData.projectId },
       crudMethod: { ...crudSysProjectReceive }
     })
