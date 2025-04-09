@@ -130,13 +130,6 @@
               placeholder="选择日期"
             />
           </el-form-item>
-          <el-form-item label="收合同时间" prop="contractReceiveTime">
-            <el-date-picker
-              v-model="form.contractReceiveTime"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
           <el-form-item label="合同付款方式" prop="contractPayWay">
             <el-select
               v-model="form.contractPayWay"
@@ -151,20 +144,6 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="开工时间">
-            <el-date-picker
-              v-model="form.projectStartTime"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
-          <el-form-item label="竣工时间">
-            <el-date-picker
-              v-model="form.projectFinishTime"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
           <el-form-item label="项目进度" prop="projectProgress">
             <el-input-number v-model="form.projectProgress" :min="0" :max="100" :step="10" label="请输入"/>
           </el-form-item>
@@ -178,24 +157,6 @@
               <el-option
                 v-for="item in projectPersons"
                 :key="item.id+'A'"
-                :label="item.name"
-                :value="item.id"
-              >
-                <span style="float: left">{{ item.name }}</span>
-                <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="技术人员" prop="technicalPerson">
-            <el-select
-              v-model="form.technicalPerson"
-              filterable
-              style="width: 178px"
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in projectPersons"
-                :key="item.id+'B'"
                 :label="item.name"
                 :value="item.id"
               >
@@ -374,7 +335,6 @@ const defaultForm = {
   projectStartTime: null,
   projectFinishTime: null,
   salesPerson: null,
-  technicalPerson: null,
   partyAPerson: null,
   invoiceType: null,
   remark: null,
@@ -439,9 +399,6 @@ export default {
         ],
         salesPerson: [
           { required: true, message: '业务人员不能为空', trigger: 'blur' }
-        ],
-        technicalPerson: [
-          { required: true, message: '技术人员不能为空', trigger: 'blur' }
         ],
         invoiceType: [
           { required: true, message: '发票类型 0-专票，1-普票不能为空', trigger: 'blur' }
