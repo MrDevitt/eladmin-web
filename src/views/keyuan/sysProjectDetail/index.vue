@@ -13,12 +13,7 @@
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
-          <el-option
-            v-for="item in projectTypes"
-            :key="item.label"
-            :label="item.label"
-            :value="item.value"
-          />
+          <el-option v-for="item in dict.project_type" :key="item.id" :label="item.label" :value="item.value"/>
         </el-select>
         <label class="el-form-item-label">项目地区</label>
         <el-select
@@ -85,12 +80,7 @@
               style="width: 178px"
               placeholder="请选择"
             >
-              <el-option
-                v-for="item in projectTypes"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value"
-              />
+              <el-option v-for="item in dict.project_type" :key="item.label" :label="item.label" :value="item.value"/>
             </el-select>
           </el-form-item>
           <el-form-item label="项目名" prop="projectName">
@@ -279,19 +269,31 @@
             </el-dialog>
           </template>
         </el-table-column>
-        <el-table-column prop="projectProgress" label="项目进度" />
-        <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay" />
-        <el-table-column prop="shouldReceiveAmount" label="应收款金额" :formatter="formatPrice" />
-        <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson" />
-        <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson" />
-        <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType" />
-        <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" />
-        <el-table-column prop="salesPercent" label="业务中心百分比" />
-        <el-table-column prop="technicalPercent" label="技术中心百分比" />
-        <el-table-column prop="managementPercent" label="管理中心百分比" />
-        <el-table-column prop="presidentPercent" label="总裁办百分比" />
-        <el-table-column prop="createTime" label="创建时间" />
-        <el-table-column prop="updateTime" label="更新时间" />
+        <el-table-column prop="projectProgress" label="项目进度"/>
+        <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay"/>
+        <el-table-column prop="shouldReceiveAmount" label="应收款金额" :formatter="formatPrice"/>
+        <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
+        <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson"/>
+        <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType"/>
+        <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"/>
+        <el-table-column prop="attachment" label="附件">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="clickAttachment(scope)">查看附件</el-button>
+            <el-dialog title="收款详情" :visible.sync="attachmentTableVisible[scope.$index]">
+              <attachment
+                v-if="attachmentTableVisible[scope.$index]"
+                ref="receiveDetail"
+                :project-id="receiveProjectId"
+              />
+            </el-dialog>
+          </template>
+        </el-table-column>
+        <el-table-column prop="salesPercent" label="业务中心百分比"/>
+        <el-table-column prop="technicalPercent" label="技术中心百分比"/>
+        <el-table-column prop="managementPercent" label="管理中心百分比"/>
+        <el-table-column prop="presidentPercent" label="总裁办百分比"/>
+        <el-table-column prop="createTime" label="创建时间"/>
+        <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
           v-if="checkPer(['admin','sysProjectDetail:edit','sysProjectDetail:del'])"
           label="操作"
@@ -322,6 +324,7 @@ import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
+import Attachment from '@/views/keyuan/sysProjectDetail/attachment'
 
 const defaultForm = {
   id: null,
@@ -354,17 +357,9 @@ const defaultForm = {
 }
 export default {
   name: 'SysProjectDetail',
-  components: { SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
+  components: { Attachment, SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
   mixins: [presenter(), header(), form(defaultForm), crud()],
-  cruds() {
-    return CRUD({
-      title: '项目明细',
-      url: 'api/sysProjectDetail',
-      idField: 'id',
-      sort: 'id,desc',
-      crudMethod: { ...crudSysProjectDetail }
-    })
-  },
+  dicts: ['project_type', 'rkz_regions'],
   data() {
     return {
       permission: {
@@ -374,7 +369,7 @@ export default {
       },
       rules: {
         projectType: [
-          { required: true, message: '项目类型 0-检测，1-监理，2-设计不能为空', trigger: 'blur' }
+          { required: true, message: '项目类型不能为空', trigger: 'blur' }
         ],
         projectName: [
           { required: true, message: '项目名不能为空', trigger: 'blur' }
@@ -419,12 +414,6 @@ export default {
           { required: true, message: '合同付款方式不能为空', trigger: 'blur' }
         ]
       },
-      projectTypes: [
-        { value: 0, label: '检测' },
-        { value: 1, label: '监理' },
-        { value: 2, label: '设计' },
-        { value: 3, label: '其他' }
-      ],
       invoiceTypes: [
         { value: 0, label: '专票' },
         { value: 1, label: '普票' },
@@ -437,8 +426,22 @@ export default {
         { value: 3, label: '按进度拨付' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
-      dialogTableVisible: []
+      dialogTableVisible: [], attachmentTableVisible: [], projectRegions: []
     }
+  },
+  created() {
+    // 得到完整数据
+    console.log(this.dict.project_type)
+    console.log(this.dict.rkz_regions)
+  },
+  cruds() {
+    return CRUD({
+      title: '项目明细',
+      url: 'api/sysProjectDetail',
+      idField: 'id',
+      sort: 'id,desc',
+      crudMethod: { ...crudSysProjectDetail }
+    })
   },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
@@ -473,7 +476,7 @@ export default {
       })
     },
     formatProjectType(row, column, id) {
-      return this.projectTypes[id].label
+      return this.dict.project_type[id].label
     },
     formatInvoiceType(row, column, id) {
       return this.invoiceTypes[id].label
@@ -494,12 +497,16 @@ export default {
       this.receiveProjectId = scope.row.id
       this.dialogTableVisible.splice(scope.$index, 1, true)
     },
+    clickAttachment(scope) {
+      this.receiveProjectId = scope.row.id
+      this.attachmentTableVisible.splice(scope.$index, 1, true)
+    },
     generateRegion(projectType, all = false) {
       if (all) {
-        return ['日喀则', '拉萨', '阿里', '那曲', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马', '谢通门', '南木林']
+        return ['日喀则', '拉萨', '阿里', '那曲'].concat(this.dict.rkz_regions.map(a => a.label))
       }
-      if (projectType === 1) {
-        return ['日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马', '谢通门', '南木林']
+      if (projectType == 1) {
+        return this.dict.rkz_regions.map(a => a.label)
       }
       return ['日喀则', '拉萨', '阿里', '那曲']
     }
@@ -508,5 +515,9 @@ export default {
 </script>
 
 <style scoped>
-
+.upload-section {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
 </style>
