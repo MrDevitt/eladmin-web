@@ -227,8 +227,8 @@
               placeholder="选择日期"
             />
           </el-form-item>
-          <el-form-item v-if="currentProjectId!==null" label="收款情况">
-            <sys-project-receive :project-id="currentProjectId" />
+          <el-form-item v-if="form.id!==null" label="收款情况">
+            <sys-project-receive :project-id="form.id"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -429,10 +429,14 @@ export default {
       dialogTableVisible: [], attachmentTableVisible: [], projectRegions: []
     }
   },
-  created() {
-    // 得到完整数据
-    console.log(this.dict.project_type)
-    console.log(this.dict.rkz_regions)
+  async created() {
+    getAllProjectPerson().then(res => {
+      this.projectPersons = res.content.slice()
+      this.projectPersonNameMap = this.projectPersons.reduce(function(map, obj) {
+        map[obj.id] = obj.name
+        return map
+      }, {})
+    })
   },
   cruds() {
     return CRUD({
@@ -446,34 +450,13 @@ export default {
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
-      this.getProjectPersons(true)
       return true
     },
     [CRUD.HOOK.beforeToCU]() {
-      this.getProjectPersons()
       this.form.contractAmount /= 100
-    },
-    [CRUD.HOOK.beforeToEdit]() {
-      console.log(this.crud)
-      this.currentProjectId = this.form.id
-    },
-    [CRUD.HOOK.beforeToAdd]() {
-      this.currentProjectId = null
     },
     [CRUD.HOOK.beforeSubmit]() {
       this.form.contractAmount = Math.floor(this.form.contractAmount * 100)
-      console.log(this.form)
-    },
-    getProjectPersons(refresh = false) {
-      getAllProjectPerson().then(res => {
-        this.projectPersons = res.content.slice()
-        if (refresh) {
-          this.projectPersonNameMap = this.projectPersons.reduce(function(map, obj) {
-            map[obj.id] = obj.name
-            return map
-          }, {})
-        }
-      })
     },
     formatProjectType(row, column, id) {
       return this.dict.project_type[id].label

@@ -28,7 +28,7 @@
             placeholder="请选择"
           >
             <el-option
-              v-for="item in attachmentTypes"
+              v-for="item in getAttachmentTypes()"
               :key="item.label"
               :label="item.label"
               :value="item.value"
@@ -45,7 +45,7 @@
             :headers="headers"
             :on-success="handleSuccess"
             :on-error="handleError"
-            :action="fileUploadApi + '/projectAttachment?name=' + projectId + '_' + form.type"
+            :action="fileUploadApi + '/projectAttachment?name=' + prefix + projectId + '_' + form.type"
           >
             <div class="eladmin-upload"><i class="el-icon-upload"/> 添加文件</div>
             <div slot="tip" class="el-upload__tip">可上传png、pdf格式文件，且不超过10M</div>
@@ -127,7 +127,10 @@ export default {
     return CRUD({
       title: '文件',
       url: 'api/localStorage/projectAttachment',
-      params: { 'projectId': this.propsData.projectId },
+      params: {
+        'projectId': this.propsData.projectId,
+        'prefix': this.propsData.prefix
+      },
       crudMethod: { ...crudFile }
     })
   },
@@ -136,6 +139,10 @@ export default {
     projectId: {
       type: [Number, null],
       default: null
+    },
+    prefix: {
+      type: [String],
+      default: ''
     }
   },
   data() {
@@ -149,7 +156,8 @@ export default {
       },
       attachmentTypes: [
         { label: '明细表', value: '明细表' },
-        { label: '合同', value: '合同' }
+        { label: '合同', value: '合同' },
+        { label: '担保单', value: '担保单' }
       ]
     }
   },
@@ -161,6 +169,8 @@ export default {
   },
   created() {
     this.crud.optShow.add = false
+    console.log(this.projectId)
+    console.log(this.prefix)
   },
   methods: {
     // 上传文件
@@ -193,6 +203,17 @@ export default {
         duration: 2500
       })
       this.loading = false
+    },
+    getAttachmentTypes() {
+      if (this.prefix === 'guarantee_') {
+        return [
+          { label: '担保单', value: '担保单' }
+        ]
+      }
+      return [
+        { label: '明细表', value: '明细表' },
+        { label: '合同', value: '合同' }
+      ]
     }
   }
 }

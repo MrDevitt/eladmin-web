@@ -49,12 +49,7 @@
             class="filter-item"
             @keyup.enter.native="crud.toQuery"
           >
-            <el-option
-              v-for="item in projectTypes"
-              :key="item.label"
-              :label="item.label"
-              :value="item.value"
-            />
+            <el-option v-for="item in dict.project_type" :key="item.label" :label="item.label" :value="item.value"/>
           </el-select>
           <date-range-picker v-model="query.contractTime" class="el-form-item-label" />
           <rrOperation :crud="crud" />
@@ -122,6 +117,7 @@ export default {
   name: 'SysShouldReceiveStatistics',
   components: { SysProjectReceive, pagination, crudOperation, rrOperation, DateRangePicker },
   mixins: [presenter(), header(), crud()],
+  dicts: ['project_type', 'rkz_regions'],
   cruds() {
     return CRUD({
       title: '项目明细',
@@ -156,34 +152,22 @@ export default {
         { value: 2, label: '签合同30进度50付30完工结清' },
         { value: 3, label: '按进度拨付' }
       ],
-      projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
+      projectPersons: [], projectPersonNameMap: null, receiveProjectId: null,
       dialogTableVisible: [],
-      shouldReceiveByPerson: [
-        {
-          name: '陈国强',
-          exam: '10000',
-          supervise: '200000',
-          design: '50000'
-        },
-        {
-          name: '张佳',
-          exam: '40000',
-          supervise: '600000',
-          design: '10000'
-        },
-        {
-          name: '冯瑜',
-          exam: '20000',
-          supervise: '50000',
-          design: '30000'
-        }
-      ],
       shouldReceiveData: []
     }
   },
-  mounted() {
-    this.getProjectPersons(true)
-    this.getShouldReceiveData()
+  async created() {
+    getAllProjectPerson().then(res => {
+      this.projectPersons = res.content.slice()
+      this.projectPersonNameMap = this.projectPersons.reduce(function(map, obj) {
+        map[obj.id] = obj.name
+        return map
+      }, {})
+    })
+    getShouldReceiveData().then(res => {
+      this.shouldReceiveData = res.tableData.slice()
+    })
   },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
@@ -193,31 +177,8 @@ export default {
     [CRUD.HOOK.beforeToCU]() {
       this.form.contractAmount /= 100
     },
-    [CRUD.HOOK.beforeToEdit]() {
-      this.currentProjectId = this.form.id
-    },
-    [CRUD.HOOK.beforeToAdd]() {
-      this.currentProjectId = null
-    },
     [CRUD.HOOK.beforeSubmit]() {
       this.form.contractAmount = Math.floor(this.form.contractAmount * 100)
-    },
-    getProjectPersons(refresh = false) {
-      getAllProjectPerson().then(res => {
-        this.projectPersons = res.content.slice()
-        if (refresh) {
-          this.projectPersonNameMap = this.projectPersons.reduce(function(map, obj) {
-            map[obj.id] = obj.name
-            return map
-          }, {})
-        }
-      })
-    },
-    getShouldReceiveData() {
-      getShouldReceiveData().then(res => {
-        console.log(res)
-        this.shouldReceiveData = res.tableData.slice()
-      })
     },
     formatProjectType(row, column, id) {
       return this.projectTypes[id].label
@@ -243,10 +204,10 @@ export default {
     },
     generateRegion(projectType, all = false) {
       if (all) {
-        return ['日喀则', '拉萨', '阿里', '那曲', '日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马', '谢通门', '南木林']
+        return ['日喀则', '拉萨', '阿里', '那曲'].concat(this.dict.rkz_regions.map(a => a.label))
       }
-      if (projectType === 1) {
-        return ['日喀则市区', '吉隆', '白朗', '聂拉木', '岗巴', '定日', '萨嘎', '仁布', '江孜', '康马', '谢通门', '南木林']
+      if (projectType == 1) {
+        return this.dict.rkz_regions.map(a => a.label)
       }
       return ['日喀则', '拉萨', '阿里', '那曲']
     }

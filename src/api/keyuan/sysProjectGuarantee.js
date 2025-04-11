@@ -1,5 +1,12 @@
 import request from '@/utils/request'
 
+export function getSysProjectGuaranteeData() {
+  return request({
+    url: 'api/sysProjectGuarantee/data',
+    method: 'get'
+  })
+}
+
 export function add(data) {
   return request({
     url: 'api/sysProjectGuarantee',
