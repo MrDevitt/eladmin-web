@@ -13,18 +13,6 @@
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         />
-        <date-range-picker
-          v-model="query.createTime"
-          start-placeholder="createTimeStart"
-          end-placeholder="createTimeStart"
-          class="date-item"
-        />
-        <date-range-picker
-          v-model="query.updateTime"
-          start-placeholder="updateTimeStart"
-          end-placeholder="updateTimeStart"
-          class="date-item"
-        />
         <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
@@ -43,6 +31,12 @@
           </el-form-item>
           <el-form-item label="手机号" prop="phoneNumber">
             <el-input v-model="form.phoneNumber" style="width: 370px;"/>
+          </el-form-item>
+          <el-form-item label="科目编号" prop="accountNumber">
+            <el-input v-model="form.accountNumber" style="width: 370px;"/>
+          </el-form-item>
+          <el-form-item label="上年结转" prop="initialBalance">
+            <el-input-number v-model="form.initialBalance" :precision="2" :step="0.1"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -63,6 +57,8 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="name" label="姓名"/>
         <el-table-column prop="phoneNumber" label="手机号"/>
+        <el-table-column prop="accountNumber" label="科目编号"/>
+        <el-table-column prop="initialBalance" label="上年结转" :formatter="formatCurrency"/>
         <el-table-column prop="createTime" label="创建时间"/>
         <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
@@ -93,7 +89,16 @@ import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 
-const defaultForm = { id: null, name: null, phoneNumber: null, isDeleted: null, createTime: null, updateTime: null }
+const defaultForm = {
+  id: null,
+  name: null,
+  phoneNumber: null,
+  isDeleted: null,
+  accountNumber: null,
+  initialBalance: null,
+  createTime: null,
+  updateTime: null
+}
 export default {
   name: 'SysProjectPerson',
   components: { pagination, crudOperation, rrOperation, udOperation },
@@ -131,6 +136,21 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
+    },
+    [CRUD.HOOK.beforeToCU]() {
+      this.form.initialBalance /= 100
+    },
+    [CRUD.HOOK.beforeSubmit]() {
+      this.form.initialBalance = Math.floor(this.form.initialBalance * 100)
+    },
+    formatCurrency(row, column, num) {
+      if (num == null) {
+        return 'N/A'
+      }
+      num = num.toFixed(2) / 100
+      const str = num.toString()
+      const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
+      return str.replace(reg, '$1,')
     }
   }
 }

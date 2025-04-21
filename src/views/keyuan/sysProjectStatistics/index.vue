@@ -90,7 +90,6 @@ export default {
   },
   mounted() {
     getStatistics().then(res => {
-      console.log(res)
       this.statisticsData = JSON.parse(JSON.stringify(res))
       for (const data of this.contractTotalData) {
         const newValue = res.contractTotalByType[data.text]

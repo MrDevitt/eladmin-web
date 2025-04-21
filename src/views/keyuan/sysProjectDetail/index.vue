@@ -80,7 +80,9 @@
               style="width: 178px"
               placeholder="请选择"
             >
-              <el-option v-for="item in dict.project_type" :key="item.label" :label="item.label" :value="item.value"/>
+              <el-option v-for="item in dict.project_type" :key="item.label" :label="item.label"
+                         :value="parseInt(item.value)"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="项目名" prop="projectName">
@@ -105,7 +107,14 @@
             <el-input v-model="form.partyA" style="width: 370px" />
           </el-form-item>
           <el-form-item label="乙方名称" prop="partyB">
-            <el-input v-model="form.partyB" style="width: 370px" />
+            <el-select
+              v-model="form.partyB"
+              style="width: 178px"
+              placeholder="请选择"
+              filterable
+            >
+              <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
+            </el-select>
           </el-form-item>
           <el-form-item label="合同编号" prop="contractNumber">
             <el-input v-model="form.contractNumber" style="width: 370px" />
@@ -359,7 +368,7 @@ export default {
   name: 'SysProjectDetail',
   components: { Attachment, SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
   mixins: [presenter(), header(), form(defaultForm), crud()],
-  dicts: ['project_type', 'rkz_regions'],
+  dicts: ['project_type', 'rkz_regions', 'party_b_names'],
   data() {
     return {
       permission: {

@@ -1,6 +1,6 @@
 {
   "name": "eladmin-web",
-  "version": "2.7.9",
+  "version": "2.8.0",
   "description": "ELADMIN 前端源码",
   "author": "Zheng Jie",
   "license": "Apache-2.0",
@@ -49,6 +49,7 @@
     "js-cookie": "2.2.0",
     "jsencrypt": "^3.0.0-rc.1",
     "jszip": "^3.7.1",
+    "lodash": "^4.17.21",
     "mavon-editor": "^2.9.1",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",

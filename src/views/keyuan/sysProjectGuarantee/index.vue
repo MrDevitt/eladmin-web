@@ -88,9 +88,9 @@
               <el-select v-model="form.status" filterable placeholder="请选择">
                 <el-option
                   v-for="item in dict.guarantee_status"
-                  :key="item.id"
+                  :key="item.value"
                   :label="item.label"
-                  :value="item.value"
+                  :value="parseInt(item.value)"
                 />
               </el-select>
             </el-form-item>
@@ -100,7 +100,7 @@
                   v-for="item in dict.project_type"
                   :key="item.id"
                   :label="item.label"
-                  :value="item.value"
+                  :value="parseInt(item.value)"
                 />
               </el-select>
             </el-form-item>
