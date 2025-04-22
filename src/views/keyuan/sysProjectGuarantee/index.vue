@@ -250,6 +250,7 @@ import pagination from '@crud/Pagination'
 import DateRangePicker from '@/components/DateRangePicker'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import Attachment from '@/views/keyuan/sysProjectDetail/attachment'
+import { Decimal } from 'decimal.js'
 
 const defaultForm = {
   id: null,
@@ -329,10 +330,12 @@ export default {
       return true
     },
     [CRUD.HOOK.beforeToCU]() {
-      this.form.guaranteeAmount /= 100
+      if (this.form.guaranteeAmount !== null) {
+        this.form.guaranteeAmount = new Decimal(this.form.guaranteeAmount).div(100)
+      }
     },
     [CRUD.HOOK.beforeSubmit]() {
-      this.form.guaranteeAmount = Math.floor(this.form.guaranteeAmount * 100)
+      this.form.guaranteeAmount = new Decimal(this.form.guaranteeAmount).times(100).floor()
     },
     formatPrice(row, column, price) {
       if (isNaN(price) || price === null || price === 0) {

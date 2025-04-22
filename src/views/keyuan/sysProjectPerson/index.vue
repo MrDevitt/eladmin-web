@@ -88,6 +88,7 @@ import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
+import { Decimal } from 'decimal.js'
 
 const defaultForm = {
   id: null,
@@ -138,10 +139,12 @@ export default {
       return true
     },
     [CRUD.HOOK.beforeToCU]() {
-      this.form.initialBalance /= 100
+      if (this.form.initialBalance !== null) {
+        this.form.initialBalance = new Decimal(this.form.initialBalance).div(100)
+      }
     },
     [CRUD.HOOK.beforeSubmit]() {
-      this.form.initialBalance = Math.floor(this.form.initialBalance * 100)
+      this.form.initialBalance = new Decimal(this.form.initialBalance).times(100).floor()
     },
     formatCurrency(row, column, num) {
       if (num == null) {

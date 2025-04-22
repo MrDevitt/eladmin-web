@@ -83,6 +83,7 @@ import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
+import { Decimal } from 'decimal.js'
 
 const defaultForm = {
   id: null,
@@ -142,19 +143,19 @@ export default {
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
-      console.log(this.projectId)
       this.crud.params.projectId = this.projectId
-      console.log(this.crud)
       return this.projectId !== null
     },
     [CRUD.HOOK.beforeToCU]() {
       this.form.projectId = this.projectId
-      this.form.invoiceAmount /= 100
-      this.form.receiveAmount /= 100
+      if (this.form.invoiceAmount !== null && this.form.receiveAmount !== null) {
+        this.form.invoiceAmount = new Decimal(this.form.invoiceAmount).div(100)
+        this.form.receiveAmount = new Decimal(this.form.receiveAmount).div(100)
+      }
     },
     [CRUD.HOOK.beforeSubmit]() {
-      this.form.invoiceAmount = Math.floor(this.form.invoiceAmount * 100)
-      this.form.receiveAmount = Math.floor(this.form.receiveAmount * 100)
+      this.form.invoiceAmount = new Decimal(this.form.invoiceAmount).times(100).floor()
+      this.form.receiveAmount = new Decimal(this.form.receiveAmount).times(100).floor()
     },
     formatPrice(row, column, price) {
       if (isNaN(price) || price === null || price === 0) {

@@ -355,6 +355,7 @@ import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
 import Attachment from '@/views/keyuan/sysProjectDetail/attachment'
+import { Decimal } from 'decimal.js'
 
 const defaultForm = {
   id: null,
@@ -483,10 +484,12 @@ export default {
       return true
     },
     [CRUD.HOOK.beforeToCU]() {
-      this.form.contractAmount /= 100
+      if (this.form.contractAmount !== null) {
+        this.form.contractAmount = new Decimal(this.form.contractAmount).div(100)
+      }
     },
     [CRUD.HOOK.beforeSubmit]() {
-      this.form.contractAmount = Math.floor(this.form.contractAmount * 100)
+      this.form.contractAmount = new Decimal(this.form.contractAmount).times(100).floor()
     },
     formatProjectType(row, column, id) {
       return this.dict.project_type[id].label
@@ -495,6 +498,9 @@ export default {
       return this.invoiceTypes[id].label
     },
     formatProjectPerson(row, column, id) {
+      if (id === null || this.projectPersonNameMap === null) {
+        return '/'
+      }
       return this.projectPersonNameMap[id]
     },
     formatPrice(row, column, price) {
