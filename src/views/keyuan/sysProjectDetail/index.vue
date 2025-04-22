@@ -60,8 +60,29 @@
             <span style="float: left; color: #8492a6">{{ item.phoneNumber }}</span>
           </el-option>
         </el-select>
-        <date-range-picker v-model="query.createTime" class="el-form-item-label" />
-        <rrOperation :crud="crud" />
+        <label class="el-form-item-label">合同编号</label>
+        <el-input
+          v-model="query.contractNumber"
+          clearable
+          placeholder="合同编号"
+          style="width: 160px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        />
+        <label class="el-form-item-label">完成情况</label>
+        <el-select
+          v-model="query.projectProgress"
+          clearable
+          style="width: 160px"
+          placeholder="完成情况"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option label="未完成" :value="[0,99]"/>
+          <el-option label="已完成" :value="[100,200]"/>
+        </el-select>
+        <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
+        <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
       <crudOperation :permission="permission" />
