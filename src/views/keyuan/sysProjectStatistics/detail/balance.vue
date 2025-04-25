@@ -1,5 +1,22 @@
 <template>
   <div class="app-container">
+    <div class="filter-container">
+      <label class="item-label">数据截止时间</label>
+      <el-select
+        v-model="selectedMonth"
+        placeholder="选择月份"
+        clearable
+        style="width: 200px; margin-bottom: 20px"
+        @change="handleMonthChange"
+      >
+        <el-option
+          v-for="month in monthOptions"
+          :key="month.value"
+          :label="month.label"
+          :value="month.value"
+        />
+      </el-select>
+    </div>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="card-header">
         <span>部门余额表</span>
@@ -27,13 +44,36 @@ export default {
   components: { BalanceTable },
   data() {
     return {
-      balanceData: {}
+      balanceData: {},
+      monthOptions: [
+        { label: '一月', value: 1 },
+        { label: '二月', value: 2 },
+        { label: '三月', value: 3 },
+        { label: '四月', value: 4 },
+        { label: '五月', value: 5 },
+        { label: '六月', value: 6 },
+        { label: '七月', value: 7 },
+        { label: '八月', value: 8 },
+        { label: '九月', value: 9 },
+        { label: '十月', value: 10 },
+        { label: '十一月', value: 11 },
+        { label: '十二月', value: 12 }
+      ],
+      selectedMonth: null
     }
   },
   async created() {
-    getSysProjectBalance().then(res => {
+    this.selectedMonth = new Date().getMonth() + 1
+    getSysProjectBalance(this.selectedMonth).then(res => {
       this.balanceData = cloneDeep(res)
     })
+  },
+  methods: {
+    handleMonthChange() {
+      getSysProjectBalance(this.selectedMonth).then(res => {
+        this.balanceData = cloneDeep(res)
+      })
+    }
   }
 }
 </script>
@@ -44,5 +84,22 @@ export default {
   color: dodgerblue;
   font-size: medium;
   font-weight: normal;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 20px 0;
+}
+
+.item-label {
+  margin: 0 3px 9px 0;
+  display: inline-block;
+  text-align: right;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #606266;
+  line-height: 30.5px;
+  padding: 0 7px 0 7px;
 }
 </style>

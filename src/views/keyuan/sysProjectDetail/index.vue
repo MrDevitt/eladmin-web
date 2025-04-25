@@ -81,6 +81,17 @@
           <el-option label="未完成" :value="[0,99]"/>
           <el-option label="已完成" :value="[100,200]"/>
         </el-select>
+        <label class="el-form-item-label">乙方单位</label>
+        <el-select
+          v-model="query.partyB"
+          clearable
+          style="width: 160px"
+          placeholder="乙方单位"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
+        </el-select>
         <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
         <rrOperation :crud="crud"/>
       </div>
@@ -377,7 +388,6 @@ const defaultForm = {
   managementPercent: 20,
   presidentPercent: 20,
   receiveAmount: null,
-  isDeleted: null,
   createTime: null,
   updateTime: null,
   projectRegion: null,

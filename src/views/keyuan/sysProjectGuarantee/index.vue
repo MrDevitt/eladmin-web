@@ -50,6 +50,15 @@
               :value="item.value"
             />
           </el-select>
+          <label class="el-form-item-label">项目名</label>
+          <el-input
+            v-model="query.projectName"
+            clearable
+            placeholder="项目名"
+            style="width: 160px"
+            class="filter-item"
+            @keyup.enter.native="crud.toQuery"
+          />
           <label class="el-form-item-label">担保人员</label>
           <el-select
             v-model="query.guaranteePerson"

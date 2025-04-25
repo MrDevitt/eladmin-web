@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function getSysProjectBalance() {
+export function getSysProjectBalance(month) {
   return request({
-    url: '/api/sysProjectBalance',
+    url: '/api/sysProjectBalance?month=' + month,
     method: 'get'
   })
 }

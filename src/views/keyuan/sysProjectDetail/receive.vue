@@ -92,7 +92,6 @@ const defaultForm = {
   invoiceTime: null,
   receiveAmount: null,
   receiveTime: null,
-  isDeleted: null,
   createTime: null,
   updateTime: null
 }

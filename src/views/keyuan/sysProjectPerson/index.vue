@@ -32,8 +32,11 @@
           <el-form-item label="手机号" prop="phoneNumber">
             <el-input v-model="form.phoneNumber" style="width: 370px;"/>
           </el-form-item>
-          <el-form-item label="科目编号" prop="accountNumber">
+          <el-form-item label="开销科目编号" prop="accountNumber">
             <el-input v-model="form.accountNumber" style="width: 370px;"/>
+          </el-form-item>
+          <el-form-item label="备用金科目编号" prop="reserveFundNumber">
+            <el-input v-model="form.reserveFundNumber" style="width: 370px;"/>
           </el-form-item>
           <el-form-item label="上年结转" prop="initialBalance">
             <el-input-number v-model="form.initialBalance" :precision="2" :step="0.1"/>
@@ -57,7 +60,8 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="name" label="姓名"/>
         <el-table-column prop="phoneNumber" label="手机号"/>
-        <el-table-column prop="accountNumber" label="科目编号"/>
+        <el-table-column prop="accountNumber" label="开销科目编号"/>
+        <el-table-column prop="reserveFundNumber" label="备用金科目编号"/>
         <el-table-column prop="initialBalance" label="上年结转" :formatter="formatCurrency"/>
         <el-table-column prop="createTime" label="创建时间"/>
         <el-table-column prop="updateTime" label="更新时间"/>
@@ -94,8 +98,8 @@ const defaultForm = {
   id: null,
   name: null,
   phoneNumber: null,
-  isDeleted: null,
   accountNumber: null,
+  reserveFundNumber: null,
   initialBalance: null,
   createTime: null,
   updateTime: null
