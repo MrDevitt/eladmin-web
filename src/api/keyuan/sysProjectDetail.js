@@ -1,19 +1,5 @@
 import request from '@/utils/request'
 
-export function getShouldReceiveData() {
-  return request({
-    url: 'api/sysProjectDetail/shouldReceiveData',
-    method: 'get'
-  })
-}
-
-export function getStatistics() {
-  return request({
-    url: 'api/sysProjectDetail/statistics',
-    method: 'get'
-  })
-}
-
 export function add(data) {
   return request({
     url: 'api/sysProjectDetail',

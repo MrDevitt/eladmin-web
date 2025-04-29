@@ -85,6 +85,8 @@
         <el-select
           v-model="query.partyB"
           clearable
+          filterable
+          allow-create
           style="width: 160px"
           placeholder="乙方单位"
           class="filter-item"

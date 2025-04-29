@@ -18,33 +18,22 @@
       </el-select>
     </div>
     <el-card class="box-card" shadow="always">
-      <div slot="header" class="card-header">
-        <span>部门余额表</span>
-      </div>
-      <balance-table :v-if="balanceData.departmentRows" :balance-table-data="balanceData.departmentRows"/>
-    </el-card>
-    <el-card class="box-card" shadow="always">
-      <div slot="header" class="card-header">
-        <span>业务人余额表</span>
-      </div>
-      <balance-table :v-if="balanceData.personRows" :balance-table-data="balanceData.personRows"
-                     first-column-name="业务人"
-      />
+      <el-table :data="invoiceData" >
+        <el-table-column prop="name" label="公司名"/>
+        <el-table-column prop="invoiced" label="12月累计开票"/>
+        <el-table-column prop="toInvoice" label="预估待开票"/>
+      </el-table>
     </el-card>
   </div>
 </template>
 
 <script>
-import BalanceTable from '@/components/Statistics/BalanceTable'
-import { getSysProjectBalance } from '@/api/keyuan/sysProjectStatistics'
-import { cloneDeep } from 'lodash'
+import { getSysProjectInvoice } from '@/api/keyuan/sysProjectStatistics'
 
 export default {
-  name: 'Balance',
-  components: { BalanceTable },
+  name: 'Invoice',
   data() {
     return {
-      balanceData: {},
       monthOptions: [
         { label: '一月', value: 1 },
         { label: '二月', value: 2 },
@@ -59,33 +48,28 @@ export default {
         { label: '十一月', value: 11 },
         { label: '十二月', value: 12 }
       ],
+      invoiceData: null,
       selectedMonth: null
     }
   },
   async created() {
     this.selectedMonth = new Date().getMonth() + 1
-    getSysProjectBalance(this.selectedMonth).then(res => {
-      this.balanceData = cloneDeep(res)
+    getSysProjectInvoice(this.selectedMonth).then(res => {
+      this.invoiceData = res.slice()
     })
   },
   methods: {
     handleMonthChange() {
-      getSysProjectBalance(this.selectedMonth).then(res => {
-        this.balanceData = cloneDeep(res)
+      getSysProjectInvoice(this.selectedMonth).then(res => {
+        this.invoiceData = res.slice()
       })
     }
   }
+
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-.card-header {
-  text-align: center;
-  color: dodgerblue;
-  font-size: medium;
-  font-weight: normal;
-}
-
+<style scoped>
 .filter-container {
   display: flex;
   justify-content: flex-start;

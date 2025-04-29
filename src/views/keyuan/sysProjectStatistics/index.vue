@@ -57,7 +57,7 @@
 
 <script>
 import PanelGroup from '../../dashboard/PanelGroup'
-import { getStatistics } from '@/api/keyuan/sysProjectDetail'
+import { getStatistics } from '@/api/keyuan/sysProjectStatistics'
 import Category from '@/components/Echarts/Category'
 import StatisticsTable from '@/components/Statistics/StatisticsTable'
 

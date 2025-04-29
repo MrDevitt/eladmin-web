@@ -104,7 +104,8 @@
 </template>
 
 <script>
-import crudSysProjectDetail, { getShouldReceiveData } from '@/api/keyuan/sysProjectDetail'
+import crudSysProjectDetail from '@/api/keyuan/sysProjectDetail'
+import { getShouldReceiveData } from '@/api/keyuan/sysProjectStatistics'
 import CRUD, { crud, header, presenter } from '@crud/crud'
 import DateRangePicker from '@/components/DateRangePicker'
 import rrOperation from '@crud/RR.operation'
@@ -114,7 +115,7 @@ import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
 
 export default {
-  name: 'SysShouldReceiveStatistics',
+  name: 'ShouldReceive',
   components: { SysProjectReceive, pagination, crudOperation, rrOperation, DateRangePicker },
   mixins: [presenter(), header(), crud()],
   dicts: ['project_type', 'rkz_regions'],
