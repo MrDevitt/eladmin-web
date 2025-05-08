@@ -5,12 +5,8 @@
     </div>
     <el-tabs type="border-card">
       <el-tab-pane v-for="(item, index) in tabTableData" :key="index" :label="item.label">
-        <el-table :cell-style="columnStyle" :data="item.data" style="width: 100%" show-summary
-                  :summary-method="getSummaries" :default-sort="item.defaultSort"
-        >
-          <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop"
-                           :label="config.label" sortable :formatter="formatCurrency"
-          />
+        <el-table :data="item.data" style="width: 100%" show-summary :summary-method="getSummaries" :default-sort="item.defaultSort" stripe>
+          <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop" :label="config.label" sortable :formatter="formatCurrency"/>
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -32,16 +28,6 @@ export default {
         return 'title'
       }
     }
-  },
-  data() {
-    return {
-      lastMonth: null
-    }
-  },
-  mounted() {
-    const date = new Date()
-    date.setDate(0)
-    this.lastMonth = date.getMonth()
   },
   methods: {
     formatCurrency(row, column, num) {
@@ -77,11 +63,6 @@ export default {
         }
       })
       return sums
-    },
-    columnStyle(input) {
-      if (input.columnIndex === this.lastMonth + 1) {
-        return { background: '#F6F7FB' }
-      }
     }
   }
 }

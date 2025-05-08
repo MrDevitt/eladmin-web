@@ -5,7 +5,6 @@
       <el-select
         v-model="selectedMonth"
         placeholder="选择月份"
-        clearable
         style="width: 200px; margin-bottom: 20px"
         @change="handleMonthChange"
       >
@@ -18,10 +17,11 @@
       </el-select>
     </div>
     <el-card class="box-card" shadow="always">
-      <el-table :data="invoiceData" >
+      <el-table :data="invoiceData" stripe>
         <el-table-column prop="name" label="公司名"/>
-        <el-table-column prop="invoiced" label="12月累计开票"/>
-        <el-table-column prop="toInvoice" label="预估待开票"/>
+        <el-table-column prop="invoiced" label="12月累计开票" :formatter="formatCurrency"/>
+        <el-table-column prop="toInvoice" label="预估待开票" :formatter="formatCurrency"/>
+        <el-table-column prop="remaining" label="剩余额度" :formatter="formatCurrency"/>
       </el-table>
     </el-card>
   </div>
@@ -63,6 +63,11 @@ export default {
       getSysProjectInvoice(this.selectedMonth).then(res => {
         this.invoiceData = res.slice()
       })
+    },
+    formatCurrency(row, column, num) {
+      const str = num.toString()
+      const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
+      return str.replace(reg, '$1,')
     }
   }
 

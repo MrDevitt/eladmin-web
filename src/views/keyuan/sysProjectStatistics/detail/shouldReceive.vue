@@ -4,12 +4,13 @@
       <div slot="header" class="card-header">
         <span>项目应收款统计</span>
       </div>
-      <el-table :data="shouldReceiveData" show-summary>
+      <el-table :data="shouldReceiveData" show-summary stripe>
         <el-table-column prop="name" label="业务人" />
-        <el-table-column prop="检测" label="检测" />
-        <el-table-column prop="监理" label="监理" />
-        <el-table-column prop="设计" label="设计" />
-        <el-table-column prop="sum" label="合计" />
+        <el-table-column prop="检测" label="检测" :formatter="formatCurrency" />
+        <el-table-column prop="监理" label="监理" :formatter="formatCurrency" />
+        <el-table-column prop="设计" label="设计" :formatter="formatCurrency" />
+        <el-table-column prop="其他" label="其他" :formatter="formatCurrency" />
+        <el-table-column prop="sum" label="合计" :formatter="formatCurrency" />
         />
       </el-table>
     </el-card>
@@ -211,6 +212,14 @@ export default {
         return this.dict.rkz_regions.map(a => a.label)
       }
       return ['日喀则', '拉萨', '阿里', '那曲']
+    },
+    formatCurrency(row, column, num) {
+      if (num === null || num === undefined) {
+        return ''
+      }
+      const str = num.toString()
+      const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
+      return str.replace(reg, '$1,')
     }
   }
 }

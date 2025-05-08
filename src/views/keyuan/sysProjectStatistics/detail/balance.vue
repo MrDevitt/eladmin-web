@@ -5,7 +5,6 @@
       <el-select
         v-model="selectedMonth"
         placeholder="选择月份"
-        clearable
         style="width: 200px; margin-bottom: 20px"
         @change="handleMonthChange"
       >
@@ -27,9 +26,7 @@
       <div slot="header" class="card-header">
         <span>业务人余额表</span>
       </div>
-      <balance-table :v-if="balanceData.personRows" :balance-table-data="balanceData.personRows"
-                     first-column-name="业务人"
-      />
+      <balance-table :v-if="balanceData.personRows" :balance-table-data="balanceData.personRows" first-column-name="业务人"/>
     </el-card>
   </div>
 </template>
