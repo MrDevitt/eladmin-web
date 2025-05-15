@@ -4,8 +4,7 @@
     show-summary
     :summary-method="getSummaries"
     :row-style="firstColumnName === '业务人' ? getRowStyle : undefined"
-    max-height="800"
-    stripe
+    max-height="600"
     row-key="name"
     :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
     <el-table-column prop="name" :label="firstColumnName" fixed="left" width="120"/>

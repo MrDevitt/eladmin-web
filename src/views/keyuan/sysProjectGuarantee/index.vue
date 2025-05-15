@@ -4,7 +4,7 @@
       <div slot="header" class="card-header">
         <span>项目担保统计</span>
       </div>
-      <el-table :data="guaranteeData" show-summary stripe :row-style="getRowStyle">
+      <el-table :data="guaranteeData" show-summary :row-style="getRowStyle">
         <el-table-column prop="name" label="业务人"/>
         <el-table-column prop="normal" label="担保中" :formatter="formatCurrency" />
         <el-table-column prop="abnormal" label="逾期" :formatter="formatCurrency" />
