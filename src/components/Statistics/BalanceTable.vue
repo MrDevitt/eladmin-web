@@ -3,6 +3,7 @@
     :data="balanceTableData"
     show-summary
     :summary-method="getSummaries"
+    :row-style="firstColumnName === '业务人' ? getRowStyle : undefined"
     max-height="800"
     stripe
     row-key="name"
@@ -34,10 +35,11 @@
       <el-table-column prop="otherThisMonth" label="本月" width="100" :formatter="formatCurrency"/>
       <el-table-column prop="otherThisYear" label="累计" width="100" :formatter="formatCurrency"/>
     </el-table-column>
-    <el-table-column label="总计" fixed="right" width="300">
+    <el-table-column label="总计" fixed="right" width="400">
       <el-table-column prop="sumLast" label="上月累计" width="100" :formatter="formatCurrency" min-width="100"/>
       <el-table-column prop="sumThisMonth" label="本月" width="100" :formatter="formatCurrency" min-width="100"/>
       <el-table-column prop="sumThisYear" label="累计" width="100" :formatter="formatCurrency" min-width="100"/>
+      <el-table-column prop="remaining" :label="firstColumnName === '业务人'?'未收款分成':'/'" width="100" :formatter="formatCurrency" min-width="100"/>
     </el-table-column>
   </el-table>
 </template>
@@ -85,6 +87,12 @@ export default {
         }
       })
       return sums
+    },
+    getRowStyle({ row }) {
+      if (Number(row.remaining) + Number(row.sumThisYear) < 0) {
+        return { backgroundColor: '#fdecea' }
+      }
+      return {}
     }
   }
 }
