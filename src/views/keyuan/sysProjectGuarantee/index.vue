@@ -30,6 +30,7 @@
           <el-select
             v-model="query.status"
             clearable
+            multiple
             placeholder="请选择"
             style="width: 185px;"
             class="filter-item"

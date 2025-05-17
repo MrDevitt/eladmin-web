@@ -7,7 +7,7 @@
     max-height="600"
     row-key="name"
     :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-    <el-table-column prop="name" :label="firstColumnName" fixed="left" width="120"/>
+    <el-table-column prop="name" :label="firstColumnName" fixed="left" width="120" show-overflow-tooltip/>
     <el-table-column label="上年结转" prop="initialBalance" width="100"/>
     <el-table-column label="支出">
       <el-table-column prop="expenseLast" label="上月累计" width="100" :formatter="formatCurrency"/>

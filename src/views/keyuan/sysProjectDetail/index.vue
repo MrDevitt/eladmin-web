@@ -94,7 +94,10 @@
         >
           <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
         </el-select>
+        <label class="el-form-item-label">项目创建时间</label>
         <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
+        <label class="el-form-item-label">收款时间</label>
+        <date-range-picker v-model="query.receiveTime" class="el-form-item-label"/>
         <rrOperation :crud="crud"/>
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->

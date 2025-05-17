@@ -5,7 +5,7 @@
     </div>
     <el-tabs type="border-card">
       <el-tab-pane v-for="(item, index) in tabTableData" :key="index" :label="item.label">
-        <el-table :data="item.data" style="width: 100%" show-summary :summary-method="getSummaries" :default-sort="item.defaultSort" stripe>
+        <el-table :data="item.data" style="width: 100%" show-summary :summary-method="getSummaries" :default-sort="item.defaultSort" stripe max-height="400">
           <el-table-column v-for="(config,index2) in item.columns" :key="index2" :prop="config.prop" :label="config.label" sortable :formatter="formatCurrency"/>
         </el-table>
       </el-tab-pane>
