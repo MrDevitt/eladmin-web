@@ -20,8 +20,8 @@
       <el-table :data="invoiceData" stripe>
         <el-table-column prop="name" label="公司名"/>
         <el-table-column prop="invoiced" label="12月累计开票" :formatter="formatCurrency"/>
-        <el-table-column prop="toInvoice" label="预估待开票" :formatter="formatCurrency"/>
         <el-table-column prop="remaining" label="剩余额度" :formatter="formatCurrency"/>
+        <el-table-column prop="toInvoice" label="应收款待开票" :formatter="formatCurrency"/>
       </el-table>
     </el-card>
   </div>

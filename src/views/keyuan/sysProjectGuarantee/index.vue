@@ -12,7 +12,7 @@
         <el-table-column prop="remaining" :formatter="formatCurrency">
           <template v-slot:header>
             <span>担保余额</span>
-            <el-tooltip class="item" effect="dark" content="担保余额 = 10万 + 未收款提成 + 业务余额 - 担保中金额 - 2*逾期金额" placement="top">
+            <el-tooltip class="item" effect="dark" content="担保余额 = 业务余额 + 未收款提成 - 担保中金额 - 逾期金额" placement="top">
               <i class="el-icon-question" style="color: #409EFF; margin-left: 5px;"/>
             </el-tooltip>
           </template>

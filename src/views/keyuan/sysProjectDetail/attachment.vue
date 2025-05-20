@@ -17,9 +17,7 @@
       </crudOperation>
     </div>
     <!--表单组件-->
-    <el-dialog append-to-body :close-on-click-modal="false" :before-close="crud.cancelCU"
-               :visible.sync="crud.status.cu > 0" :title="crud.status.add ? '文件上传' : '编辑文件'" width="500px"
-    >
+    <el-dialog append-to-body :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.add ? '文件上传' : '编辑文件'" width="500px">
       <el-form ref="form" :model="form" size="small" label-width="80px">
         <el-form-item label="附件类型">
           <el-select
@@ -59,9 +57,7 @@
       </div>
     </el-dialog>
     <!--表格渲染-->
-    <el-table ref="table" v-loading="crud.loading" :data="crud.data" style="width: 100%;"
-              @selection-change="crud.selectionChangeHandler"
-    >
+    <el-table ref="table" v-loading="crud.loading" :data="crud.data" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
       <el-table-column type="selection" width="55"/>
       <el-table-column prop="name" label="文件名">
         <template slot-scope="scope">
@@ -99,11 +95,11 @@
           </el-image>
         </template>
       </el-table-column>
-      <el-table-column prop="suffix" label="文件类型"/>
-      <el-table-column prop="type" label="类别"/>
-      <el-table-column prop="size" label="大小"/>
-      <el-table-column prop="operate" label="操作人"/>
-      <el-table-column prop="createTime" label="创建日期"/>
+      <el-table-column prop="suffix" label="文件类型" />
+      <el-table-column prop="type" label="类别" />
+      <el-table-column prop="size" label="大小" />
+      <el-table-column prop="operate" label="操作人" />
+      <el-table-column prop="createTime" label="创建日期" />
     </el-table>
     <!--分页组件-->
     <pagination/>
@@ -169,8 +165,6 @@ export default {
   },
   created() {
     this.crud.optShow.add = false
-    console.log(this.projectId)
-    console.log(this.prefix)
   },
   methods: {
     // 上传文件
@@ -179,10 +173,10 @@ export default {
     },
     beforeUpload(file) {
       let isLt2M = true
-      isLt2M = file.size / 1024 / 1024 < 10
+      isLt2M = file.size / 1024 / 1024 < 20
       if (!isLt2M) {
         this.loading = false
-        this.$message.error('上传文件大小不能超过 10MB!')
+        this.$message.error('上传文件大小不能超过 20MB!')
       }
       this.form.name = file.name
       return isLt2M
