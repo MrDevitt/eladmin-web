@@ -46,7 +46,7 @@
             :action="fileUploadApi + '/projectAttachment?name=' + prefix + projectId + '_' + form.type"
           >
             <div class="eladmin-upload"><i class="el-icon-upload"/> 添加文件</div>
-            <div slot="tip" class="el-upload__tip">可上传png、pdf格式文件，且不超过10M</div>
+            <div slot="tip" class="el-upload__tip">可上传png、pdf格式文件，且不超过20M</div>
           </el-upload>
         </el-form-item>
       </el-form>
