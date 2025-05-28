@@ -94,6 +94,21 @@
         >
           <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
         </el-select>
+        <label class="el-form-item-label">附件情况</label>
+        <el-select
+          v-model="query.attachmentStatus"
+          clearable
+          multiple
+          style="width: 160px"
+          placeholder="附件情况"
+          class="filter-item"
+          @change="handleAttachmentStatusChange"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option label="无附件" :value="0" />
+          <el-option label="有合同" :value="1" />
+          <el-option label="有明细表" :value="2" />
+        </el-select>
         <label class="el-form-item-label">项目创建时间</label>
         <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
         <label class="el-form-item-label">收款时间</label>
@@ -543,6 +558,16 @@ export default {
         return this.dict.rkz_regions.map(a => a.label)
       }
       return ['日喀则', '拉萨', '阿里', '那曲']
+    },
+    handleAttachmentStatusChange(value) {
+      // 如果选择了“无附件”
+      if (value.includes(0)) {
+        // 清除其他选项，只保留“无附件”
+        this.query.attachmentStatus = [0]
+      } else {
+        // 确保“无附件”未被选中
+        this.query.attachmentStatus = value.filter(v => v !== 0)
+      }
     }
   }
 }
