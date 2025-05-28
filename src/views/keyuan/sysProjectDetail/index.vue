@@ -330,7 +330,45 @@
             </el-dialog>
           </template>
         </el-table-column>
-        <el-table-column prop="projectProgress" label="项目进度"/>
+        <el-table-column
+          prop="projectProgress"
+          label="项目进度"
+          :width="120"
+        >
+          <template slot-scope="scope">
+            <div class="progress-cell">
+              <!-- 编辑状态 -->
+              <div v-if="isEditing(scope.row)" class="edit-mode">
+                <el-input
+                  v-model="scope.row.projectProgress"
+                  class="edit-progress-input"
+                  @blur="saveProgress(scope.row)"
+                  @keyup.enter.native="saveProgress(scope.row)"
+                />
+                <el-button
+                  size="mini"
+                  type="success"
+                  class="save-btn"
+                  @click="saveProgress(scope.row)"
+                >
+                  保存
+                </el-button>
+              </div>
+              <!-- 只读状态 -->
+              <div v-else class="view-mode">
+                <span class="progress-text">{{ scope.row.projectProgress }}</span>
+                <el-button
+                  v-if="checkPer(['admin', 'sysProjectDetail:editProgress'])"
+                  size="mini"
+                  class="edit-btn"
+                  @click="toggleEdit(scope.row)"
+                >
+                  <i class="el-icon-edit" />
+                </el-button>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay"/>
         <el-table-column prop="shouldReceiveAmount" label="应收款金额" :formatter="formatPrice"/>
         <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
@@ -376,7 +414,7 @@
 </template>
 
 <script>
-import crudSysProjectDetail from '@/api/keyuan/sysProjectDetail'
+import crudSysProjectDetail, { edit } from '@/api/keyuan/sysProjectDetail'
 import CRUD, { crud, form, header, presenter } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
@@ -487,7 +525,7 @@ export default {
         { value: 3, label: '按进度拨付' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
-      dialogTableVisible: [], attachmentTableVisible: [], projectRegions: []
+      dialogTableVisible: [], attachmentTableVisible: [], projectRegions: [],editingRows: []
     }
   },
   async created() {
@@ -504,7 +542,7 @@ export default {
       title: '项目明细',
       url: 'api/sysProjectDetail',
       idField: 'id',
-      sort: 'id,desc',
+      sort: 'createTime,desc',
       crudMethod: { ...crudSysProjectDetail }
     })
   },
@@ -568,6 +606,31 @@ export default {
         // 确保“无附件”未被选中
         this.query.attachmentStatus = value.filter(v => v !== 0)
       }
+    },
+    // 判断该行是否处于编辑状态
+    isEditing(row) {
+      return this.editingRows.includes(row.id)
+    },
+    // 切换编辑状态
+    toggleEdit(row) {
+      if (this.checkPer(['admin', 'sysProjectDetail:editProgress'])) {
+        this.editingRows.push(row.id)
+      }
+    },
+    // 保存项目进度
+    saveProgress(row) {
+      // 假设你有API：updateProjectProgress(row)
+      const progress = Number(row.projectProgress)
+      if (progress < 0 || progress > 100) {
+        this.$message.error('请输入 0-100 之间的数值')
+        return
+      }
+      edit(row).then(() => {
+        this.$message.success('更新成功')
+        this.editingRows = this.editingRows.filter(id => id !== row.id)
+      }).catch(() => {
+        this.$message.error('更新失败，请重试')
+      })
     }
   }
 }
@@ -578,5 +641,28 @@ export default {
   margin: 15px 0;
   display: flex;
   gap: 10px;
+}
+.progress-cell {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.edit-mode {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* 间距 */
+  width: 100%;
+}
+
+.edit-progress-input {
+  width: 70px; /* 调整输入框宽度 */
+  text-align: center;
+}
+
+.save-btn {
+  padding: 4px 6px;
+  font-size: 12px;
+  min-width: 50px;
 }
 </style>
