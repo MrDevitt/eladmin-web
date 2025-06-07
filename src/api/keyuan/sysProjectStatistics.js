@@ -27,3 +27,10 @@ export function getSysProjectBalance(month) {
     method: 'get'
   })
 }
+
+export function getInvoicedNotReceiveData() {
+  return request({
+    url: 'api/sysProjectStatistics/invoicedNotReceive',
+    method: 'get'
+  })
+}

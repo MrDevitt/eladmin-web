@@ -105,9 +105,10 @@
           @change="handleAttachmentStatusChange"
           @keyup.enter.native="crud.toQuery"
         >
-          <el-option label="无附件" :value="0" />
-          <el-option label="有合同" :value="1" />
-          <el-option label="有明细表" :value="2" />
+          <el-option label="无合同" :value="0" />
+          <el-option label="无明细表" :value="1" />
+          <el-option label="有合同" :value="2" />
+          <el-option label="有明细表" :value="3" />
         </el-select>
         <label class="el-form-item-label">项目创建时间</label>
         <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
@@ -525,7 +526,7 @@ export default {
         { value: 3, label: '按进度拨付' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
-      dialogTableVisible: [], attachmentTableVisible: [], projectRegions: [],editingRows: []
+      dialogTableVisible: [], attachmentTableVisible: [], projectRegions: [], editingRows: []
     }
   },
   async created() {
@@ -598,13 +599,11 @@ export default {
       return ['日喀则', '拉萨', '阿里', '那曲']
     },
     handleAttachmentStatusChange(value) {
-      // 如果选择了“无附件”
       if (value.includes(0)) {
-        // 清除其他选项，只保留“无附件”
-        this.query.attachmentStatus = [0]
-      } else {
-        // 确保“无附件”未被选中
-        this.query.attachmentStatus = value.filter(v => v !== 0)
+        this.query.attachmentStatus = value.filter(v => v !== 2)
+      }
+      if (value.includes(1)) {
+        this.query.attachmentStatus = value.filter(v => v !== 3)
       }
     },
     // 判断该行是否处于编辑状态
