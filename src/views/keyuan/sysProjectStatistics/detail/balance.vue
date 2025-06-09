@@ -15,6 +15,15 @@
           :value="month.value"
         />
       </el-select>
+      <el-button
+        :loading="downloadLoading"
+        class="filter-item"
+        size="mini"
+        type="warning"
+        icon="el-icon-download"
+        style="width: 100px; margin-bottom: 20px; margin-left: 20px"
+        @click="doExport"
+      >导出</el-button>
     </div>
     <el-card class="box-card" shadow="always">
       <div slot="header" class="card-header">
@@ -35,6 +44,8 @@
 import BalanceTable from '@/components/Statistics/BalanceTable'
 import { getSysProjectBalance } from '@/api/keyuan/sysProjectStatistics'
 import { cloneDeep } from 'lodash'
+import { download } from '@/api/data'
+import { downloadFile } from '@/utils/index'
 
 export default {
   name: 'Balance',
@@ -56,7 +67,7 @@ export default {
         { label: '十一月', value: 11 },
         { label: '十二月', value: 12 }
       ],
-      selectedMonth: null
+      selectedMonth: null, downloadLoading: false
     }
   },
   async created() {
@@ -69,6 +80,15 @@ export default {
     handleMonthChange() {
       getSysProjectBalance(this.selectedMonth).then(res => {
         this.balanceData = cloneDeep(res)
+      })
+    },
+    doExport() {
+      this.downloadLoading = true
+      download('/api/sysProjectStatistics/balance/download', { 'month': this.selectedMonth }).then(result => {
+        downloadFile(result, '余额表数据', 'xlsx')
+        this.downloadLoading = false
+      }).catch(() => {
+        this.downloadLoading = false
       })
     }
   }
