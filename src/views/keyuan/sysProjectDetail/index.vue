@@ -4,6 +4,15 @@
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
         <!-- 搜索 -->
+        <label class="el-form-item-label">项目Id</label>
+        <el-input
+          v-model="query.idsStr"
+          clearable
+          placeholder="项目Id"
+          style="width: 100px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        />
         <label class="el-form-item-label">项目类型</label>
         <el-select
           v-model="query.projectType"
@@ -13,7 +22,7 @@
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
-          <el-option v-for="item in dict.project_type" :key="item.id" :label="item.label" :value="item.value"/>
+          <el-option v-for="item in dict.project_type" :key="item.id" :label="item.label" :value="item.value" />
         </el-select>
         <label class="el-form-item-label">项目地区</label>
         <el-select
@@ -45,7 +54,7 @@
           v-model="query.salesPerson"
           filterable
           clearable
-          style="width: 160px"
+          style="width: 100px"
           placeholder="业务人员"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
@@ -73,13 +82,13 @@
         <el-select
           v-model="query.projectProgress"
           clearable
-          style="width: 160px"
+          style="width: 100px"
           placeholder="完成情况"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
-          <el-option label="未完成" :value="[0,99]"/>
-          <el-option label="已完成" :value="[100,200]"/>
+          <el-option label="未完成" :value="[0,99]" />
+          <el-option label="已完成" :value="[100,200]" />
         </el-select>
         <label class="el-form-item-label">乙方单位</label>
         <el-select
@@ -87,19 +96,19 @@
           clearable
           filterable
           allow-create
-          style="width: 160px"
+          style="width: 100px"
           placeholder="乙方单位"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
-          <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
+          <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value" />
         </el-select>
         <label class="el-form-item-label">附件情况</label>
         <el-select
           v-model="query.attachmentStatus"
           clearable
           multiple
-          style="width: 160px"
+          style="width: 100px"
           placeholder="附件情况"
           class="filter-item"
           @change="handleAttachmentStatusChange"
@@ -110,11 +119,23 @@
           <el-option label="有合同" :value="2" />
           <el-option label="有明细表" :value="3" />
         </el-select>
+        <label class="el-form-item-label">付款方式</label>
+        <el-select
+          v-model="query.contractPayWay"
+          clearable
+          multiple
+          style="width: 100px"
+          placeholder="付款方式"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option v-for="item in contractPayWays" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
         <label class="el-form-item-label">项目创建时间</label>
-        <date-range-picker v-model="query.createTime" class="el-form-item-label"/>
+        <date-range-picker v-model="query.createTime" class="el-form-item-label" />
         <label class="el-form-item-label">收款时间</label>
-        <date-range-picker v-model="query.receiveTime" class="el-form-item-label"/>
-        <rrOperation :crud="crud"/>
+        <date-range-picker v-model="query.receiveTime" class="el-form-item-label" />
+        <rrOperation :crud="crud" />
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
       <crudOperation :permission="permission" />
@@ -133,8 +154,11 @@
               style="width: 178px"
               placeholder="请选择"
             >
-              <el-option v-for="item in dict.project_type" :key="item.label" :label="item.label"
-                         :value="parseInt(item.value)"
+              <el-option
+                v-for="item in dict.project_type"
+                :key="item.label"
+                :label="item.label"
+                :value="parseInt(item.value)"
               />
             </el-select>
           </el-form-item>
@@ -166,7 +190,7 @@
               placeholder="请选择"
               filterable
             >
-              <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value"/>
+              <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="合同编号" prop="contractNumber">
@@ -290,7 +314,7 @@
             />
           </el-form-item>
           <el-form-item v-if="form.id!==null" label="收款情况">
-            <sys-project-receive :project-id="form.id"/>
+            <sys-project-receive :project-id="form.id" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -316,8 +340,9 @@
         <el-table-column prop="partyB" label="乙方名称" />
         <el-table-column prop="contractNumber" label="合同编号" />
         <el-table-column prop="contractTime" label="签订时间" />
+        <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay" />
         <el-table-column prop="contractAmount" label="合同金额" :formatter="formatPrice" />
-        <el-table-column label="收款金额">
+        <el-table-column label="已收款">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="clickReceive(scope)">
               {{ formatPrice(0, 0, scope.row.receiveAmount) }}
@@ -331,6 +356,7 @@
             </el-dialog>
           </template>
         </el-table-column>
+        <el-table-column label="未收款" :formatter="formatUnpaid" />
         <el-table-column
           prop="projectProgress"
           label="项目进度"
@@ -370,12 +396,11 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="contractPayWay" label="付款方式" :formatter="formatPayWay"/>
-        <el-table-column prop="shouldReceiveAmount" label="应收款金额" :formatter="formatPrice"/>
-        <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson"/>
-        <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson"/>
-        <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType"/>
-        <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"/>
+        <el-table-column prop="shouldReceiveAmount" label="应收款" :formatter="formatPrice" />
+        <el-table-column prop="salesPerson" label="业务人员" :formatter="formatProjectPerson" />
+        <el-table-column prop="partyAPerson" label="甲方负责人" :formatter="formatProjectPerson" />
+        <el-table-column prop="invoiceType" label="发票类型" :formatter="formatInvoiceType" />
+        <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" />
         <el-table-column prop="attachment" label="附件">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="clickAttachment(scope)">查看附件</el-button>
@@ -388,12 +413,12 @@
             </el-dialog>
           </template>
         </el-table-column>
-        <el-table-column prop="salesPercent" label="业务中心百分比"/>
-        <el-table-column prop="technicalPercent" label="技术中心百分比"/>
-        <el-table-column prop="managementPercent" label="管理中心百分比"/>
-        <el-table-column prop="presidentPercent" label="总裁办百分比"/>
-        <el-table-column prop="createTime" label="创建时间"/>
-        <el-table-column prop="updateTime" label="更新时间"/>
+        <el-table-column prop="salesPercent" label="业务中心百分比" />
+        <el-table-column prop="technicalPercent" label="技术中心百分比" />
+        <el-table-column prop="managementPercent" label="管理中心百分比" />
+        <el-table-column prop="presidentPercent" label="总裁办百分比" />
+        <el-table-column prop="createTime" label="创建时间" />
+        <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column
           v-if="checkPer(['admin','sysProjectDetail:edit','sysProjectDetail:del'])"
           label="操作"
@@ -453,7 +478,8 @@ const defaultForm = {
   contractReceiveTime: null,
   contractPayWay: null,
   shouldReceiveAmount: null,
-  projectProgress: 0
+  projectProgress: 0,
+  idsStr: null
 }
 export default {
   name: 'SysProjectDetail',
@@ -523,7 +549,10 @@ export default {
         { value: 0, label: '签合同50，完工结清' },
         { value: 1, label: '一次性付清' },
         { value: 2, label: '签合同30进度50付30完工结清' },
-        { value: 3, label: '按进度拨付' }
+        { value: 3, label: '按进度拨付' },
+        { value: 4, label: '签合同60，施工图(进度90)30，竣工验收10' },
+        { value: 5, label: '签合同50，验收(进度80)30，审计20' },
+        { value: 6, label: '合同签订报告通过90，基础验收10' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
       dialogTableVisible: [], attachmentTableVisible: [], projectRegions: [], editingRows: []
@@ -577,6 +606,13 @@ export default {
         return 0.00
       }
       return (price / 100).toFixed(2)
+    },
+    formatUnpaid(row, column, price) {
+      const contract = row.contractAmount || 0
+      const receive = row.receiveAmount || 0
+      const unpaid = Math.max(0, contract - receive)
+      // 可选：限制未收款金额不能为负值
+      return (unpaid / 100).toFixed(2)
     },
     formatPayWay(row, column, id) {
       return this.contractPayWays[id].label

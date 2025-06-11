@@ -27,6 +27,20 @@
       <el-table-column :show-overflow-tooltip="true" prop="methodName" label="执行方法" />
       <el-table-column :show-overflow-tooltip="true" prop="params" width="120px" label="参数" />
       <el-table-column :show-overflow-tooltip="true" prop="cronExpression" label="cron表达式" />
+      <el-table-column :show-overflow-tooltip="true" prop="result" width="100px" label="结果" >
+        <template #default="{ row }">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">{{ row.result }}</span>
+            <el-button
+              size="mini"
+              icon="el-icon-copy-document"
+              circle
+              style="margin-left: 8px;"
+              @click="copyText(row.result)"
+            />
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="异常详情" width="110px">
         <template slot-scope="scope">
           <el-button v-show="scope.row.exceptionDetail" size="mini" type="text" @click="info(scope.row.exceptionDetail)">查看详情</el-button>
@@ -59,6 +73,7 @@
 <script>
 import crud from '@/mixins/crud'
 import DateRangePicker from '@/components/DateRangePicker'
+
 export default {
   components: { DateRangePicker },
   mixins: [crud],
@@ -88,6 +103,14 @@ export default {
     info(errorInfo) {
       this.errorInfo = errorInfo
       this.errorDialog = true
+    },
+    copyText(text) {
+      navigator.clipboard.writeText(text).then(() =>
+        this.$message.success('复制成功')
+      ).catch(e => {
+        this.$message.error('复制失败')
+        console.error('复制失败:', e)
+      })
     }
   }
 }
