@@ -78,17 +78,29 @@
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         />
-        <label class="el-form-item-label">完成情况</label>
+        <label class="el-form-item-label">进度情况</label>
         <el-select
           v-model="query.projectProgress"
           clearable
           style="width: 100px"
-          placeholder="完成情况"
+          placeholder="进度情况"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
           <el-option label="未完成" :value="[0,99]" />
           <el-option label="已完成" :value="[100,200]" />
+        </el-select>
+        <label class="el-form-item-label">收款情况</label>
+        <el-select
+          v-model="query.receiveFinished"
+          clearable
+          style="width: 100px"
+          placeholder="收款情况"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option label="收款未完成" :value="false" />
+          <el-option label="收款已完成" :value="true" />
         </el-select>
         <label class="el-form-item-label">乙方单位</label>
         <el-select
@@ -478,7 +490,8 @@ const defaultForm = {
   contractReceiveTime: null,
   contractPayWay: null,
   shouldReceiveAmount: null,
-  projectProgress: 0,
+  projectProgress: null,
+  receiveFinished: null,
   idsStr: null
 }
 export default {

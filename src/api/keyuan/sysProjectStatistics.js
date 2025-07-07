@@ -14,6 +14,13 @@ export function getShouldReceiveData() {
   })
 }
 
+export function getNotReceiveData() {
+  return request({
+    url: 'api/sysProjectStatistics/notReceive',
+    method: 'get'
+  })
+}
+
 export function getSysProjectInvoice(month) {
   return request({
     url: '/api/sysProjectStatistics/invoice?month=' + month,

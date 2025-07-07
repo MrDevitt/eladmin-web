@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
-    <receive-template :data-type="'shouldReceive'" :receive-amount-data="shouldReceiveAmountData" :receive-rate-data="shouldReceiveRateData"/>
+    <receive-template :data-type="'notReceive'" :receive-amount-data="notReceiveAmountData" :receive-rate-data="notReceiveRateData"/>
   </div>
 </template>
 
 <script>
-import { getShouldReceiveData } from '@/api/keyuan/sysProjectStatistics'
+import { getNotReceiveData } from '@/api/keyuan/sysProjectStatistics'
 import ReceiveTemplate from '@/views/keyuan/sysProjectStatistics/detail/receiveTemplate'
 
 export default {
@@ -13,14 +13,14 @@ export default {
   components: { ReceiveTemplate },
   data() {
     return {
-      shouldReceiveAmountData: [],
-      shouldReceiveRateData: []
+      notReceiveAmountData: [],
+      notReceiveRateData: []
     }
   },
   async created() {
-    getShouldReceiveData().then(res => {
-      this.shouldReceiveAmountData = res.receiveAmountRows.slice()
-      this.shouldReceiveRateData = res.receiveRateRows.slice()
+    getNotReceiveData().then(res => {
+      this.notReceiveAmountData = res.receiveAmountRows.slice()
+      this.notReceiveRateData = res.receiveRateRows.slice()
     })
   }
 }
