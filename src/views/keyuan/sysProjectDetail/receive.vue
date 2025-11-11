@@ -50,6 +50,7 @@
         @selection-change="crud.selectionChangeHandler"
       >
         <el-table-column type="selection" width="55"/>
+        <el-table-column prop="id" label="id"/>
         <el-table-column prop="invoiceAmount" label="开票金额" :formatter="formatPrice"/>
         <el-table-column prop="invoiceTime" label="开票时间"/>
         <el-table-column prop="receiveAmount" label="到账金额" :formatter="formatPrice"/>
