@@ -115,6 +115,15 @@
         >
           <el-option v-for="item in dict.party_b_names" :key="item.label" :label="item.label" :value="item.value" />
         </el-select>
+        <label class="el-form-item-label">甲方单位</label>
+        <el-input
+          v-model="query.partyA"
+          clearable
+          placeholder="项目名"
+          style="width: 160px"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        />
         <label class="el-form-item-label">附件情况</label>
         <el-select
           v-model="query.attachmentStatus"
@@ -416,7 +425,7 @@
         <el-table-column prop="attachment" label="附件">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="clickAttachment(scope)">查看附件</el-button>
-            <el-dialog title="收款详情" :visible.sync="attachmentTableVisible[scope.$index]">
+            <el-dialog title="附件详情" :visible.sync="attachmentTableVisible[scope.$index]">
               <attachment
                 v-if="attachmentTableVisible[scope.$index]"
                 ref="receiveDetail"
@@ -565,7 +574,10 @@ export default {
         { value: 3, label: '按进度拨付' },
         { value: 4, label: '签合同60，施工图(进度90)30，竣工验收10' },
         { value: 5, label: '签合同50，验收(进度80)30，审计20' },
-        { value: 6, label: '合同签订报告通过90，基础验收10' }
+        { value: 6, label: '合同签订报告通过90，基础验收10' },
+        { value: 7, label: '签合同50，完成检测40，终验10' },
+        { value: 8, label: '签合同30，完成70%检测40，完成检测30' },
+        { value: 9, label: '签合同30，完成70%检测50，完成检测20' }
       ],
       projectPersons: [], projectPersonNameMap: null, currentProjectId: null, receiveProjectId: null,
       dialogTableVisible: [], attachmentTableVisible: [], projectRegions: [], editingRows: []

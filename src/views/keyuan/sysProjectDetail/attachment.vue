@@ -206,7 +206,8 @@ export default {
       }
       return [
         { label: '明细表', value: '明细表' },
-        { label: '合同', value: '合同' }
+        { label: '合同', value: '合同' },
+        { label: '其他附件', value: '其他附件' }
       ]
     }
   }
