@@ -4,9 +4,9 @@
 
 <script>
 import echarts from 'echarts'
+import { debounce } from '@/utils'
 
 require('echarts/theme/macarons') // echarts theme
-import { debounce } from '@/utils'
 
 export default {
   props: {
@@ -24,6 +24,10 @@ export default {
     },
     chartOption: {
       type: Object,
+      default: null
+    },
+    onTimelineChanged: {
+      type: Function,
       default: null
     }
   },
@@ -54,6 +58,11 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       if (this.chartOption !== null) {
         this.chart.setOption(this.chartOption)
+        if (this.onTimelineChanged != null) {
+          this.chart.on('timelinechanged', (params) => {
+            this.onTimelineChanged(params)
+          })
+        }
         return
       }
       const dataMap = {}

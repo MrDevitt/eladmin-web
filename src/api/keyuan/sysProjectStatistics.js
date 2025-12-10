@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function getStatistics() {
+export function getStatistics(contractYear, receiveYear) {
   return request({
-    url: 'api/sysProjectStatistics',
+    url: 'api/sysProjectStatistics?contractYear=' + contractYear + '&receiveYear=' + receiveYear,
     method: 'get'
   })
 }

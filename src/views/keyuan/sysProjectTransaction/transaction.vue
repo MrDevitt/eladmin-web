@@ -6,8 +6,9 @@
         <!-- 搜索 -->
         <label class="el-form-item-label">摘要</label>
         <el-input v-model="query.comment" clearable placeholder="摘要" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
-        <label class="el-form-item-label">科目编号</label>
+        <label v-if="summaryCrud==null" class="el-form-item-label">科目编号</label>
         <el-select
+          v-if="summaryCrud==null"
           v-model="query.accountNumber"
           placeholder="请选择科目编号"
           filterable
@@ -25,8 +26,9 @@
             <span style="float: left; color: #8492a6">{{ item.description }}</span>
           </el-option>
         </el-select>
-        <label class="el-form-item-label">银行账号编号</label>
+        <label v-if="summaryCrud==null" class="el-form-item-label">银行账号编号</label>
         <el-select
+          v-if="summaryCrud==null"
           v-model="query.bankNumber"
           placeholder="请选择银行科目编号"
           filterable
@@ -165,8 +167,22 @@ export default {
   components: { MoneyInput, pagination, crudOperation, rrOperation, udOperation },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   dicts: ['transaction_direction'],
+  props: {
+    summaryCrud: {
+      type: Object,
+      default: null
+    }
+  },
   cruds() {
-    return CRUD({ title: '项目收支信息', url: 'api/sysProjectTransaction', idField: 'id', sort: 'id,desc', crudMethod: { ...crudSysProjectTransaction }})
+    if (this.propsData.summaryCrud != null) {
+      return this.propsData.summaryCrud
+    }
+    return CRUD({
+      title: '项目收支信息',
+      url: 'api/sysProjectTransaction',
+      idField: 'id',
+      sort: 'id,desc',
+      crudMethod: { ...crudSysProjectTransaction }})
   },
   data() {
     return {

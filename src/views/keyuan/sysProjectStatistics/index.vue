@@ -7,7 +7,7 @@
       <panel-group :show-data="contractTotalData"/>
       <el-row :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <category :chart-option="contractChartOption"/>
+          <category :chart-option="contractChartOption" :on-timeline-changed="handleContractTimelineChanged"/>
         </div>
       </el-row>
       <el-row>
@@ -33,7 +33,7 @@
       <panel-group :show-data="receiveTotalData"/>
       <el-row :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <category :chart-option="receiveChartOption"/>
+          <category :chart-option="receiveChartOption" :on-timeline-changed="handleReceiveTimelineChanged"/>
         </div>
       </el-row>
       <el-row>
@@ -85,35 +85,40 @@ export default {
         { text: '其他', value: 0, duration: 3600, icon: 'money' }
       ], statisticsObtained: false,
       contractRegionTables: {},
-      statisticsData: {}
+      statisticsData: {},
+      contractYear: new Date().getFullYear(),
+      receiveYear: new Date().getFullYear()
     }
   },
   mounted() {
-    getStatistics().then(res => {
-      this.statisticsData = JSON.parse(JSON.stringify(res))
-      for (const data of this.contractTotalData) {
-        const newValue = res.contractTotalByType[data.text]
-        if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
-          data.value = res.contractTotalByType[data.text]
-        }
-      }
-      for (const data of this.receiveTotalData) {
-        const newValue = res.receiveTotalByType[data.text]
-        if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
-          data.value = res.receiveTotalByType[data.text]
-        }
-      }
-      const contractOption = JSON.parse(JSON.stringify(res.contractChartOption))
-      contractOption.baseOption = this.mergeBaseOption(contractOption.baseOption)
-      this.contractChartOption = contractOption
-
-      const receiveOption = JSON.parse(JSON.stringify(res.receiveChartOption))
-      receiveOption.baseOption = this.mergeBaseOption(receiveOption.baseOption)
-      this.receiveChartOption = receiveOption
-      this.statisticsObtained = true
-    })
+    this.initStatistics(this.contractYear, this.receiveYear)
   },
   methods: {
+    initStatistics(contractYear, receiveYear) {
+      getStatistics(contractYear, receiveYear).then(res => {
+        this.statisticsData = JSON.parse(JSON.stringify(res))
+        for (const data of this.contractTotalData) {
+          const newValue = res.contractTotalByType[data.text]
+          if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
+            data.value = res.contractTotalByType[data.text]
+          }
+        }
+        for (const data of this.receiveTotalData) {
+          const newValue = res.receiveTotalByType[data.text]
+          if (!isNaN(newValue) && newValue !== undefined && newValue !== null) {
+            data.value = res.receiveTotalByType[data.text]
+          }
+        }
+        const contractOption = JSON.parse(JSON.stringify(res.contractChartOption))
+        contractOption.baseOption = this.mergeBaseOption(contractOption.baseOption)
+        this.contractChartOption = contractOption
+
+        const receiveOption = JSON.parse(JSON.stringify(res.receiveChartOption))
+        receiveOption.baseOption = this.mergeBaseOption(receiveOption.baseOption)
+        this.receiveChartOption = receiveOption
+        this.statisticsObtained = true
+      })
+    },
     mergeBaseOption(newOption) {
       const option = {
         title: {
@@ -159,6 +164,14 @@ export default {
         ]
       }
       return Object.assign(option, newOption)
+    },
+    handleContractTimelineChanged(params) {
+      this.contractYear = this.contractChartOption.baseOption.timeline.data[params.currentIndex]
+      this.initStatistics(this.contractYear, this.receiveYear)
+    },
+    handleReceiveTimelineChanged(params) {
+      this.receiveYear = this.receiveChartOption.baseOption.timeline.data[params.currentIndex]
+      this.initStatistics(this.contractYear, this.receiveYear)
     }
   }
 }

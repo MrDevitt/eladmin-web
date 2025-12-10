@@ -38,99 +38,74 @@
         </el-table-column>
       </el-table>
       <!-- 明细表格（隐藏） -->
-      <el-card v-if="showDetails" class="details-card">
+      <el-card v-if="showDetails2" class="details-card">
         <div class="details-header">
-          <h3>明细 - {{ currentAccountDescription }}</h3>
-          <el-button type="primary" @click="showDetails = false">关闭</el-button>
+          <h3>明细 - {{ currentAccountDescription2 }}</h3>
+          <el-button type="primary" @click="showDetails2 = false">关闭</el-button>
         </div>
-        <el-table ref="table" :data="transactionDetails" size="small" style="width: 100%;">
-          <el-table-column prop="id" label="ID" />
-          <el-table-column prop="comment" label="摘要" />
-          <el-table-column prop="amount" label="金额" :formatter="currencyFormatter" />
-          <el-table-column prop="direction" label="交易类型">
-            <template slot-scope="scope">
-              {{ ['收入','支出'][scope.row.direction] }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="accountNumber" label="科目编号" />
-          <el-table-column prop="bankNumber" label="银行科目号编号" />
-          <el-table-column prop="certificateNumber" label="记账凭证编号" />
-          <el-table-column prop="transactionTime" label="交易时间" />
-          <el-table-column prop="createBy" label="创建人" />
-          <el-table-column prop="updateBy" label="修改人" />
-          <el-table-column prop="createTime" label="创建时间" />
-          <el-table-column prop="updateTime" label="修改时间" />
-        </el-table>
-        <pagination />
+        <sys-project-transaction :summary-crud="curd"/>
       </el-card>
     </el-card>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
-import { get, getSummary } from '@/api/keyuan/sysProjectTransaction'
+import crudSysProjectTransaction, { getSummary } from '@/api/keyuan/sysProjectTransaction'
 import DateRangePicker from '@/components/DateRangePicker'
 import { formatCurrency } from '@/api/keyuan/formatter'
+import SysProjectTransaction from '@/views/keyuan/sysProjectTransaction/transaction'
+import CRUD from '@crud/crud'
 
 export default {
   name: 'Summary',
-  components: { DateRangePicker },
-  setup() {
-    const dateRange = ref([new Date().getFullYear() + '-01-01 00:00:00', new Date().toISOString().split('T')[0] + ' 23:59:59'])
-    const treeData = ref([])
-    const showDetails = ref(false)
-    const currentAccountDescription = ref('')
-    const transactionDetails = ref([])
-    const fetchSummary = () => getSummary(dateRange.value[0], dateRange.value[1]).then(res => {
-      treeData.value = res.slice()
-    }).catch(e => {
-      console.error('获取科目汇总失败:', e)
-    })
-    // 获取科目余额明细
-    const fetchDetails = (accountNumber) => get({
-      'accountNumber': accountNumber,
-      'transactionTime': dateRange.value
-    }).then(res => {
-      transactionDetails.value = res.content.slice()
-      currentAccountDescription.value = accountNumber
-      showDetails.value = true
-    }).catch(e => {
-      console.error('获取科目明细失败:', e)
-    })
-
-    // 日期范围改变
-    const handleDateChange = () => {
-      showDetails.value = false
-      fetchSummary()
-    }
-
-    // 行点击事件（仅叶子节点展开明细）
-    const handleRowClick = (row) => {
-      if (row.children && row.children.length > 0) {
-        return // 有子节点，不展开明细
-      }
-      fetchDetails(row.accountNumber)
-    }
-
-    // 初始化
-    onMounted(() => {
-      fetchSummary()
-    })
-
+  components: { SysProjectTransaction, DateRangePicker },
+  data() {
     return {
-      dateRange,
-      treeData,
-      showDetails,
-      currentAccountDescription,
-      transactionDetails,
-      handleDateChange,
-      handleRowClick
+      showDetails2: false,
+      currentAccountDescription2: '',
+      dateRange: [new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-01 00:00:00', new Date().toISOString().split('T')[0] + ' 23:59:59'],
+      curd: CRUD({
+        title: '项目收支信息',
+        url: 'api/sysProjectTransaction',
+        idField: 'id',
+        sort: 'id,desc',
+        optShow: {
+          download: true,
+          reset: true
+        },
+        crudMethod: { ...crudSysProjectTransaction }}),
+      treeData: []
     }
+  },
+  mounted() {
+    this.fetchSummary()
   },
   methods: {
     currencyFormatter(row, column, value) {
       return formatCurrency(value)
+    },
+    handleRowClick(row) {
+      if (row.children && row.children.length > 0) {
+        return // 有子节点，不展开明细
+      }
+      this.curd.defaultQuery.accountNumber = row.accountNumber
+      this.curd.query.accountNumber = row.accountNumber
+      this.curd.refresh()
+      this.currentAccountDescription2 = row.name
+      this.showDetails2 = true
+    },
+    handleDateChange() {
+      this.showDetails2 = false
+      this.fetchSummary()
+    },
+    fetchSummary() {
+      this.curd.defaultQuery.transactionTime = this.dateRange
+      this.curd.query.transactionTime = this.dateRange
+      getSummary(this.dateRange[0], this.dateRange[1]).then(res => {
+        this.treeData = res.slice()
+      }).catch(e => {
+        console.error('获取科目汇总失败:', e)
+      })
     }
   }
 }

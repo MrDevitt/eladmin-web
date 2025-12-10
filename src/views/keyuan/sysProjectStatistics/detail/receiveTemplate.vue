@@ -202,7 +202,6 @@ export default {
     }
   },
   cruds() {
-    console.log(this)
     const dataType = this.propsData.dataType
     const params = {
       'createTime': [new Date('2023-01-01T00:00:00').toISOString().replace('T', ' ').substring(0, 23), new Date().toISOString().replace('T', ' ').substring(0, 23)]
@@ -213,7 +212,6 @@ export default {
     if (dataType === 'notReceive') {
       params.receiveFinished = false
     }
-    console.log(params)
     return CRUD({
       title: '项目明细',
       url: 'api/sysProjectDetail',
