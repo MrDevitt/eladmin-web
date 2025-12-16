@@ -6,6 +6,21 @@
         <!-- 搜索 -->
         <label class="el-form-item-label">摘要</label>
         <el-input v-model="query.comment" clearable placeholder="摘要" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
+        <label class="el-form-item-label">类型</label>
+        <el-select
+          v-model="query.direction"
+          clearable
+          placeholder="请选择"
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in dict.transaction_direction"
+            :key="item.id"
+            :label="item.label"
+            :value="parseInt(item.value)"
+          />
+        </el-select>
         <label v-if="summaryCrud==null" class="el-form-item-label">科目编号</label>
         <el-select
           v-if="summaryCrud==null"
@@ -67,7 +82,7 @@
                 v-for="item in dict.transaction_direction"
                 :key="item.id"
                 :label="item.label"
-                :value="item.value" />
+                :value="parseInt(item.value)" />
             </el-select>
           </el-form-item>
           <el-form-item label="科目编号" prop="accountNumber">
@@ -224,9 +239,16 @@ export default {
       allAccounts: []
     }
   },
-  async created() {
+  created() {
     getAllAccounts().then(res => {
-      this.allAccounts = res.content.slice()
+      const parentSet = new Set(
+        res.content
+          .slice()
+          .map(item => item.parent != null ? String(item.parent) : null)
+          .filter(parentId => parentId !== null && parentId !== undefined)
+      )
+      // 仅保留叶子节点
+      this.allAccounts = res.content.slice().filter(item => !parentSet.has(item.accountNumber))
     })
   },
   methods: {
