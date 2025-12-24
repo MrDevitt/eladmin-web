@@ -150,7 +150,7 @@
         <el-table-column prop="updateBy" label="修改人" />
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="updateTime" label="修改时间" />
-        <el-table-column v-if="checkPer(['admin','sysProjectTransaction:edit','sysProjectTransaction:del'])" label="操作" width="150px" align="center">
+        <el-table-column v-if="checkPer(['admin','sysProjectTransaction:edit','sysProjectTransaction:del'])&&summaryCrud==null" label="操作" width="150px" align="center">
           <template slot-scope="scope">
             <udOperation
               :data="scope.row"

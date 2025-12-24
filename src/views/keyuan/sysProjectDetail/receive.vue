@@ -15,7 +15,7 @@
       >
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
           <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input-number v-model="form.invoiceAmount" :precision="2" :step="0.1"/>
+            <money-input v-model="form.invoiceAmount" />
           </el-form-item>
           <el-form-item label="开票时间" prop="invoiceTime">
             <el-date-picker
@@ -25,7 +25,8 @@
             />
           </el-form-item>
           <el-form-item label="到账金额" prop="receiveAmount">
-            <el-input-number v-model="form.receiveAmount" :precision="2" :step="0.1"/>
+<!--            <el-input-number v-model="form.receiveAmount" :precision="2" :step="0.1"/>-->
+            <money-input v-model="form.receiveAmount" />
           </el-form-item>
           <el-form-item label="到账时间" prop="receiveTime">
             <el-date-picker
@@ -84,7 +85,7 @@ import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
-import { Decimal } from 'decimal.js'
+import MoneyInput from '@/views/components/MoneyInput'
 
 const defaultForm = {
   id: null,
@@ -98,7 +99,7 @@ const defaultForm = {
 }
 export default {
   name: 'SysProjectReceive',
-  components: { pagination, crudOperation, rrOperation, udOperation },
+  components: { MoneyInput, pagination, crudOperation, rrOperation, udOperation },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   props: {
     projectId: {
@@ -148,14 +149,6 @@ export default {
     },
     [CRUD.HOOK.beforeToCU]() {
       this.form.projectId = this.projectId
-      if (this.form.invoiceAmount !== null && this.form.receiveAmount !== null) {
-        this.form.invoiceAmount = new Decimal(this.form.invoiceAmount).div(100)
-        this.form.receiveAmount = new Decimal(this.form.receiveAmount).div(100)
-      }
-    },
-    [CRUD.HOOK.beforeSubmit]() {
-      this.form.invoiceAmount = new Decimal(this.form.invoiceAmount).times(100).floor()
-      this.form.receiveAmount = new Decimal(this.form.receiveAmount).times(100).floor()
     },
     formatPrice(row, column, price) {
       if (isNaN(price) || price === null || price === 0) {

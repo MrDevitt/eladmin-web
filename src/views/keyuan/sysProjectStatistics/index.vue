@@ -42,15 +42,15 @@
       <el-row>
         <statistics-table :tab-table-data="statisticsData.receiveByPersonTableList" title="业务人收款量"/>
       </el-row>
-      <el-row>
-        <statistics-table :tab-table-data="statisticsData.receiveByDepartmentTableList" title="部门收款分成"/>
-      </el-row>
-      <el-row>
-        <statistics-table :tab-table-data="statisticsData.receiveShareByPersonTableList" title="业务人收款分成"/>
-      </el-row>
-      <el-row>
-        <statistics-table :tab-table-data="statisticsData.examReceiveByPersonTableList" title="检测业务人分地区收款量"/>
-      </el-row>
+<!--      <el-row>-->
+<!--        <statistics-table :tab-table-data="statisticsData.receiveByDepartmentTableList" title="部门收款分成"/>-->
+<!--      </el-row>-->
+<!--      <el-row>-->
+<!--        <statistics-table :tab-table-data="statisticsData.receiveShareByPersonTableList" title="业务人收款分成"/>-->
+<!--      </el-row>-->
+<!--      <el-row>-->
+<!--        <statistics-table :tab-table-data="statisticsData.examReceiveByPersonTableList" title="检测业务人分地区收款量"/>-->
+<!--      </el-row>-->
     </el-card>
   </div>
 </template>

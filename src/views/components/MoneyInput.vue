@@ -1,19 +1,17 @@
 <template>
-  <div class="money-input-container">
+  <div>
     <el-input-number
       v-model="displayValue"
       :precision="2"
-      :controls="false"
       :max="maxAmount / 100"
       :step="0.01"
       :placeholder="placeholder"
       @change="handleInputChange"
       @blur="handleBlur"
-      class="money-input"
       :class="{ 'is-invalid': invalidAmount }"
     ></el-input-number>
     <div v-if="invalidAmount" class="error-message">
-      金额小于 {{ maxAmount / 100 }} 元
+      金额必须小于 {{ maxAmount / 100 }} 元
     </div>
   </div>
 </template>
@@ -24,11 +22,11 @@ export default {
   props: {
     value: {
       type: Number,
-      default: 0
+      default: 0.00
     },
     maxAmount: {
       type: Number,
-      default: 1000000000 // 1000万
+      default: 10000000000 // 1亿
     },
     placeholder: {
       type: String,

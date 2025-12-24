@@ -218,7 +218,7 @@
             <el-input v-model="form.contractNumber" style="width: 370px" />
           </el-form-item>
           <el-form-item label="合同金额" prop="contractAmount">
-            <el-input-number v-model="form.contractAmount" :precision="2" :step="0.1" />
+            <money-input v-model="form.contractAmount"/>
           </el-form-item>
           <el-form-item label="签订时间" prop="contractTime">
             <el-date-picker
@@ -471,7 +471,7 @@ import pagination from '@crud/Pagination'
 import { getAllProjectPerson } from '@/api/keyuan/sysProjectPerson'
 import SysProjectReceive from '@/views/keyuan/sysProjectDetail/receive'
 import Attachment from '@/views/keyuan/sysProjectDetail/attachment'
-import { Decimal } from 'decimal.js'
+import MoneyInput from '@/views/components/MoneyInput'
 
 const defaultForm = {
   id: null,
@@ -505,7 +505,7 @@ const defaultForm = {
 }
 export default {
   name: 'SysProjectDetail',
-  components: { Attachment, SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
+  components: { MoneyInput, Attachment, SysProjectReceive, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   dicts: ['project_type', 'rkz_regions', 'party_b_names'],
   data() {
@@ -605,14 +605,6 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
-    },
-    [CRUD.HOOK.beforeToCU]() {
-      if (this.form.contractAmount !== null) {
-        this.form.contractAmount = new Decimal(this.form.contractAmount).div(100)
-      }
-    },
-    [CRUD.HOOK.beforeSubmit]() {
-      this.form.contractAmount = new Decimal(this.form.contractAmount).times(100).floor()
     },
     formatProjectType(row, column, id) {
       return this.dict.project_type[id].label
