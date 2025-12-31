@@ -12,14 +12,15 @@
       <el-table
         :data="treeData"
         row-key="accountNumber"
+        :expand-row-keys="dict.transaction_expand_key.map(e => e.value)"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         border
         style="width: 100%"
-        :default-expand-all="true"
+        :indent="8"
         @row-click="handleRowClick"
       >
-        <el-table-column prop="accountNumber" label="科目编号" />
-        <el-table-column prop="name" label="科目名称" />
+        <el-table-column prop="accountNumber" label="科目编号" :min-width="100" show-overflow-tooltip />
+        <el-table-column prop="name" label="科目名称" :min-width="120" show-overflow-tooltip />
         <el-table-column prop="initialAmount" label="初始余额" :formatter="currencyFormatter" />
         <el-table-column label="期初余额" align="center">
           <el-table-column prop="beginIncome" label="收入" :formatter="currencyFormatter" />
@@ -38,10 +39,10 @@
         </el-table-column>
       </el-table>
       <!-- 明细表格（隐藏） -->
-      <el-card v-if="showDetails2" class="details-card">
+      <el-card v-if="showDetails" class="details-card">
         <div class="details-header">
-          <h3>明细 - {{ currentAccountDescription2 }}</h3>
-          <el-button type="primary" @click="showDetails2 = false">关闭</el-button>
+          <h3>明细 - {{ currentAccountDescription }}</h3>
+          <el-button type="primary" @click="showDetails = false">关闭</el-button>
         </div>
         <sys-project-transaction :summary-crud="curd"/>
       </el-card>
@@ -59,10 +60,11 @@ import CRUD from '@crud/crud'
 export default {
   name: 'Summary',
   components: { SysProjectTransaction, DateRangePicker },
+  dicts: ['transaction_expand_key'],
   data() {
     return {
-      showDetails2: false,
-      currentAccountDescription2: '',
+      showDetails: false,
+      currentAccountDescription: '',
       dateRange: [new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-01 00:00:00', new Date().toISOString().split('T')[0] + ' 23:59:59'],
       curd: CRUD({
         title: '项目收支信息',
@@ -91,11 +93,11 @@ export default {
       this.curd.defaultQuery.accountNumber = row.accountNumber
       this.curd.query.accountNumber = row.accountNumber
       this.curd.refresh()
-      this.currentAccountDescription2 = row.name
-      this.showDetails2 = true
+      this.currentAccountDescription = row.name
+      this.showDetails = true
     },
     handleDateChange() {
-      this.showDetails2 = false
+      this.showDetails = false
       this.fetchSummary()
     },
     fetchSummary() {
