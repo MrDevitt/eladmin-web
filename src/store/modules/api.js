@@ -1,5 +1,6 @@
 // 适配 Nginx 反向代理
 const baseUrl = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API
+const dozzleUrl = process.env.VUE_APP_DOZZLE_API
 const api = {
   state: {
     // 部署包上传
@@ -19,7 +20,8 @@ const api = {
     // 文件上传
     fileUploadApi: baseUrl + '/api/localStorage',
     // baseUrl，
-    baseApi: baseUrl
+    baseApi: baseUrl,
+    dozzleApi: dozzleUrl
   }
 }
 

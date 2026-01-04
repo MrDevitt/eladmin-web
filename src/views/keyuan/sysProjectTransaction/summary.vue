@@ -3,7 +3,7 @@
     <!-- 顶部筛选区 -->
     <el-card class="filter-card">
       <div class="filter-header">
-        <h2>科目余额表</h2>
+        <h2>{{ person?'业务人余额表':'科目余额表' }}</h2>
         <div class="date-picker">
           <date-range-picker v-model="dateRange" @change="handleDateChange" />
         </div>
@@ -37,6 +37,7 @@
           <el-table-column prop="endExpense" label="支出" :formatter="currencyFormatter" />
           <el-table-column prop="endRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
+        <el-table-column v-if="person" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
       </el-table>
       <!-- 明细表格（隐藏） -->
       <el-card v-if="showDetails" class="details-card">
@@ -61,6 +62,12 @@ export default {
   name: 'Summary',
   components: { SysProjectTransaction, DateRangePicker },
   dicts: ['transaction_expand_key'],
+  props: {
+    person: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       showDetails: false,
@@ -103,7 +110,7 @@ export default {
     fetchSummary() {
       this.curd.defaultQuery.transactionTime = this.dateRange
       this.curd.query.transactionTime = this.dateRange
-      getSummary(this.dateRange[0], this.dateRange[1]).then(res => {
+      getSummary(this.dateRange[0], this.dateRange[1], this.person).then(res => {
         this.treeData = res.slice()
       }).catch(e => {
         console.error('获取科目汇总失败:', e)
