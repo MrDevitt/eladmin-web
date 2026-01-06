@@ -1,11 +1,12 @@
 import request from '@/utils/request'
 
-export function getAllAccounts() {
-  const params = {
-    page: 0,
-    size: 9999,
-    enabled: true
-  }
+export function getAccounts(params) {
+  // const params2 = {
+  //   ...params,
+  //   page: 0,
+  //   size: 9999
+  // }
+  // console.log(params2)
   return request({
     url: 'api/sysProjectAccount',
     method: 'get',
@@ -37,4 +38,4 @@ export function edit(data) {
   })
 }
 
-export default { add, edit, del }
+export default { add, edit, del, getAccounts }

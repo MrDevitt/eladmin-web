@@ -24,22 +24,7 @@
             <el-input v-model="form.description" style="width: 370px;" />
           </el-form-item>
           <el-form-item label="上级科目" prop="parent">
-            <el-select
-              v-model="form.parent"
-              placeholder="请选择上级科目"
-              filterable
-              clearable
-            >
-              <el-option
-                v-for="item in allAccounts"
-                :key="item.accountNumber"
-                :label="item.accountNumber"
-                :value="item.accountNumber"
-              >
-                <span style="float: left">{{ item.accountNumber }}</span>
-                <span style="float: left; color: #8492a6">{{ item.description }}</span>
-              </el-option>
-            </el-select>
+            <el-cascader :key="cascaderKey" v-model="form.parent" :props="cascaderProps" :show-all-levels="false" clearable />
           </el-form-item>
           <el-form-item label="初始余额" prop="initialAmount">
             <money-input v-model="form.initialAmount" />
@@ -51,7 +36,18 @@
         </div>
       </el-dialog>
       <!--表格渲染-->
-      <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
+      <el-table
+        ref="table"
+        :v-loading="crud.loading"
+        lazy
+        :load="getAccountData"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        :data="crud.data"
+        row-key="accountNumber"
+        @select="crud.selectChange"
+        @select-all="crud.selectAllChange"
+        @selection-change="crud.selectionChangeHandler"
+      >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="accountNumber" label="科目编号" />
         <el-table-column prop="description" label="科目含义" />
@@ -77,7 +73,7 @@
 </template>
 
 <script>
-import crudSysProjectAccount, { getAllAccounts } from '@/api/keyuan/sysProjectAccount'
+import crudSysProjectAccount from '@/api/keyuan/sysProjectAccount'
 import CRUD, { crud, form, header, presenter } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
@@ -86,13 +82,18 @@ import pagination from '@crud/Pagination'
 import moneyInput from '@/views/components/MoneyInput'
 import { formatCurrency } from '@/api/keyuan/formatter'
 
-const defaultForm = { accountNumber: null, description: null, parent: null, initialAmount: null, createBy: null, updateBy: null, createTime: null, updateTime: null }
+const defaultForm = { accountNumber: null, description: null, parent: null, initialAmount: 0, createBy: null, updateBy: null, createTime: null, updateTime: null }
 export default {
   name: 'SysProjectAccount',
   components: { pagination, crudOperation, rrOperation, udOperation, moneyInput },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   cruds() {
-    return CRUD({ title: '项目科目信息', url: 'api/sysProjectAccount', idField: 'accountNumber', sort: 'accountNumber,desc', crudMethod: { ...crudSysProjectAccount }})
+    return CRUD({
+      title: '项目科目信息',
+      url: 'api/sysProjectAccount',
+      idField: 'accountNumber',
+      sort: 'accountNumber,desc',
+      crudMethod: { ...crudSysProjectAccount }})
   },
   data() {
     return {
@@ -117,13 +118,15 @@ export default {
         { key: 'description', display_name: '科目含义' },
         { key: 'parent', display_name: '上级科目' }
       ],
-      allAccounts: [], disableEdit: false
+      disableEdit: false,
+      cascaderProps: {
+        lazy: true,
+        checkStrictly: true,
+        emitPath: false,
+        lazyLoad: (node, resolve) => this.getAccountDataForSelect(node, resolve)
+      },
+      cascaderKey: 0
     }
-  },
-  async created() {
-    getAllAccounts().then(res => {
-      this.allAccounts = res.content.slice()
-    })
   },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
@@ -137,8 +140,28 @@ export default {
       this.disableEdit = false
     },
     [CRUD.HOOK.afterSubmit]() {
-      getAllAccounts().then(res => {
-        this.allAccounts = res.content.slice()
+      this.cascaderKey++;
+    },
+    getAccountData(tree, treeNode, resolve) {
+      const params = { parent: tree.accountNumber }
+      crudSysProjectAccount.getAccounts(params).then(res => {
+        resolve(res.content)
+      })
+    },
+    // 获取弹窗内部门数据
+    getAccountDataForSelect(node, resolve) {
+      let params = {}
+      if (!node.root) {
+        params = { parent: node.data.accountNumber }
+      }
+      crudSysProjectAccount.getAccounts(params).then(res => {
+        const data = res.content.map(item => ({
+          ...item,
+          value: item.accountNumber,
+          label: item.accountNumber + '-' + item.description,
+          leaf: !item.hasChildren
+        }))
+        resolve(data)
       })
     },
     currencyFormatter(row, column, value) {
