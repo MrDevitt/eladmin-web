@@ -18,7 +18,7 @@
       <el-dialog :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="500px">
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
           <el-form-item label="科目编号" prop="accountNumber">
-            <el-input v-model="form.accountNumber" style="width: 370px;" :disabled="disableEdit"/>
+            <el-input v-model="form.accountNumber" style="width: 370px;" :disabled="disableEdit" />
           </el-form-item>
           <el-form-item label="科目含义" prop="description">
             <el-input v-model="form.description" style="width: 370px;" />
@@ -43,16 +43,17 @@
         :load="getAccountData"
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         :data="crud.data"
+        :indent="8"
         row-key="accountNumber"
         @select="crud.selectChange"
         @select-all="crud.selectAllChange"
         @selection-change="crud.selectionChangeHandler"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="accountNumber" label="科目编号" />
-        <el-table-column prop="description" label="科目含义" />
+        <el-table-column prop="accountNumber" label="科目编号" show-overflow-tooltip />
+        <el-table-column prop="description" label="科目含义" show-overflow-tooltip />
         <el-table-column prop="parent" label="上级科目" />
-        <el-table-column prop="initialAmount" label="初始余额" :formatter="currencyFormatter"/>
+        <el-table-column prop="initialAmount" label="初始余额" :formatter="currencyFormatter" />
         <el-table-column prop="createBy" label="创建人" />
         <el-table-column prop="updateBy" label="修改人" />
         <el-table-column prop="createTime" label="创建时间" />
@@ -140,7 +141,7 @@ export default {
       this.disableEdit = false
     },
     [CRUD.HOOK.afterSubmit]() {
-      this.cascaderKey++;
+      this.cascaderKey++
     },
     getAccountData(tree, treeNode, resolve) {
       const params = { parent: tree.accountNumber }
@@ -155,13 +156,7 @@ export default {
         params = { parent: node.data.accountNumber }
       }
       crudSysProjectAccount.getAccounts(params).then(res => {
-        const data = res.content.map(item => ({
-          ...item,
-          value: item.accountNumber,
-          label: item.accountNumber + '-' + item.description,
-          leaf: !item.hasChildren
-        }))
-        resolve(data)
+        resolve(res.content)
       })
     },
     currencyFormatter(row, column, value) {

@@ -12,7 +12,7 @@
       <el-table
         :data="treeData"
         row-key="accountNumber"
-        :expand-row-keys="dict.transaction_expand_key.map(e => e.value)"
+        :expand-row-keys="person?['10010103']:dict.transaction_expand_key.map(e => e.value)"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         border
         style="width: 100%"
@@ -38,6 +38,7 @@
           <el-table-column prop="endRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
         <el-table-column v-if="person" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
+        <el-table-column v-if="person" prop="guaranteeAmount" label="担保金额" :formatter="currencyFormatter" />
       </el-table>
       <!-- 明细表格（隐藏） -->
       <el-card v-if="showDetails" class="details-card">

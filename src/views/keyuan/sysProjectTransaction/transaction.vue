@@ -193,13 +193,7 @@ export default {
         params = { parent: node.data.accountNumber }
       }
       crudSysProjectAccount.getAccounts(params).then(res => {
-        const data = res.content.map(item => ({
-          ...item,
-          value: item.accountNumber,
-          label: item.accountNumber + item.description,
-          leaf: !item.hasChildren
-        }))
-        resolve(data)
+        resolve(res.content)
       })
     }
   }

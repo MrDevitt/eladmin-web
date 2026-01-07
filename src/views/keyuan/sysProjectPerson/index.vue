@@ -32,14 +32,8 @@
           <el-form-item label="手机号" prop="phoneNumber">
             <el-input v-model="form.phoneNumber" style="width: 370px;"/>
           </el-form-item>
-          <el-form-item label="开销科目编号" prop="accountNumber">
+          <el-form-item label="收入科目编号" prop="accountNumber">
             <el-input v-model="form.accountNumber" style="width: 370px;"/>
-          </el-form-item>
-          <el-form-item label="备用金科目编号" prop="reserveFundNumber">
-            <el-input v-model="form.reserveFundNumber" style="width: 370px;"/>
-          </el-form-item>
-          <el-form-item label="上年结转" prop="initialBalance">
-            <el-input-number v-model="form.initialBalance" :precision="2" :step="0.1"/>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -60,9 +54,7 @@
         <el-table-column prop="id" label="id"/>
         <el-table-column prop="name" label="姓名"/>
         <el-table-column prop="phoneNumber" label="手机号"/>
-        <el-table-column prop="accountNumber" label="开销科目编号"/>
-        <el-table-column prop="reserveFundNumber" label="备用金科目编号"/>
-        <el-table-column prop="initialBalance" label="上年结转" :formatter="formatCurrency"/>
+        <el-table-column prop="accountNumber" label="收入科目编号"/>
         <el-table-column prop="createTime" label="创建时间"/>
         <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
@@ -92,15 +84,12 @@ import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
-import { Decimal } from 'decimal.js'
 
 const defaultForm = {
   id: null,
   name: null,
   phoneNumber: null,
   accountNumber: null,
-  reserveFundNumber: null,
-  initialBalance: null,
   createTime: null,
   updateTime: null
 }
@@ -141,23 +130,6 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
-    },
-    [CRUD.HOOK.beforeToCU]() {
-      if (this.form.initialBalance !== null) {
-        this.form.initialBalance = new Decimal(this.form.initialBalance).div(100)
-      }
-    },
-    [CRUD.HOOK.beforeSubmit]() {
-      this.form.initialBalance = new Decimal(this.form.initialBalance).times(100).floor()
-    },
-    formatCurrency(row, column, num) {
-      if (num == null) {
-        return 'N/A'
-      }
-      num = num.toFixed(2) / 100
-      const str = num.toString()
-      const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
-      return str.replace(reg, '$1,')
     }
   }
 }

@@ -33,7 +33,20 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="id" />
         <el-table-column prop="configKey" label="配置键" />
-        <el-table-column prop="configValue" label="配置值" />
+        <el-table-column prop="configValue" label="配置值" :show-overflow-tooltip="true">
+          <template #default="{ row }">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="flex: 1; overflow: hidden; text-overflow: ellipsis;">{{ row.configValue }}</span>
+              <el-button
+                size="mini"
+                icon="el-icon-copy-document"
+                circle
+                style="margin-left: 8px;"
+                @click="copyText(row.configValue)"
+              />
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="description" label="描述" />
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="updateTime" label="修改时间" />
@@ -92,6 +105,14 @@ export default {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
       return true
+    },
+    copyText(text) {
+      navigator.clipboard.writeText(text).then(() =>
+        this.$message.success('复制成功')
+      ).catch(e => {
+        this.$message.error('复制失败')
+        console.error('复制失败:', e)
+      })
     }
   }
 }
