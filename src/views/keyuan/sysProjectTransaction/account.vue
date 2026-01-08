@@ -24,7 +24,7 @@
             <el-input v-model="form.description" style="width: 370px;" />
           </el-form-item>
           <el-form-item label="上级科目" prop="parent">
-            <el-cascader :key="cascaderKey" v-model="form.parent" :props="cascaderProps" :show-all-levels="false" clearable />
+            <el-cascader :key="cascaderKey" v-model="form.parent" :options="cascaderOptions" :props="cascaderProps" :show-all-levels="false" clearable />
           </el-form-item>
           <el-form-item label="初始余额" prop="initialAmount">
             <money-input v-model="form.initialAmount" />
@@ -126,7 +126,21 @@ export default {
         emitPath: false,
         lazyLoad: (node, resolve) => this.getAccountDataForSelect(node, resolve)
       },
-      cascaderKey: 0
+      cascaderKey: 0,
+      defaultOptions: [
+        {
+          label: '1001-汇海集团账目',
+          leaf: false,
+          value: 1001,
+          accountNumber: 1001
+        },
+        {
+          label: '9001-银行账户',
+          leaf: false,
+          value: 9001,
+          accountNumber: 9001
+        }],
+      cascaderOptions: []
     }
   },
   methods: {
@@ -136,9 +150,16 @@ export default {
     },
     [CRUD.HOOK.beforeToEdit]() {
       this.disableEdit = true
+      if (this.form.parent != null) {
+        const params = { accountNumber: this.form.parent }
+        crudSysProjectAccount.getAccounts(params).then(res => {
+          this.cascaderOptions = this.defaultOptions.slice().concat(res.content)
+        })
+      }
     },
     [CRUD.HOOK.beforeToAdd]() {
       this.disableEdit = false
+      this.cascaderOptions = []
     },
     [CRUD.HOOK.afterSubmit]() {
       this.cascaderKey++

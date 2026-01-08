@@ -1,16 +1,14 @@
 import request from '@/utils/request'
 
 export function getAccounts(params) {
-  // const params2 = {
-  //   ...params,
-  //   page: 0,
-  //   size: 9999
-  // }
-  // console.log(params2)
   return request({
     url: 'api/sysProjectAccount',
     method: 'get',
-    params
+    params: {
+      ...params,
+      page: 0,
+      size: 9999
+    }
   })
 }
 

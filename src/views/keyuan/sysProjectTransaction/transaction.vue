@@ -22,9 +22,45 @@
           />
         </el-select>
         <label v-if="summaryCrud==null" class="el-form-item-label">科目编号</label>
-        <el-cascader v-model="query.accountNumber" :props="cascaderProps" :show-all-levels="false" class="filter-item" />
+        <el-select
+          v-if="summaryCrud==null"
+          v-model="query.accountNumber"
+          placeholder="请选择科目编号"
+          filterable
+          clearable
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in allAccounts"
+            :key="item.accountNumber"
+            :label="item.accountNumber"
+            :value="item.accountNumber"
+          >
+            <span style="float: left">{{ item.accountNumber }}</span>
+            <span style="float: left; color: #8492a6">{{ item.description }}</span>
+          </el-option>
+        </el-select>
         <label v-if="summaryCrud==null" class="el-form-item-label">银行账号编号</label>
-        <el-cascader v-model="query.bankNumber" :props="cascaderProps" :show-all-levels="false" class="filter-item" />
+        <el-select
+          v-if="summaryCrud==null"
+          v-model="query.bankNumber"
+          placeholder="请选择银行科目编号"
+          filterable
+          clearable
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in bankAccounts"
+            :key="item.accountNumber"
+            :label="item.accountNumber"
+            :value="item.accountNumber"
+          >
+            <span style="float: left">{{ item.accountNumber }}</span>
+            <span style="float: left; color: #8492a6">{{ item.description }}</span>
+          </el-option>
+        </el-select>
         <label class="el-form-item-label">记账凭证编号</label>
         <el-input v-model="query.certificateNumber" clearable placeholder="记账凭证编号" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
         <rrOperation :crud="crud" />
@@ -50,10 +86,38 @@
             </el-select>
           </el-form-item>
           <el-form-item label="科目编号" prop="accountNumber">
-            <el-cascader v-model="form.accountNumber" :props="cascaderProps" :show-all-levels="false" />
+            <el-select
+              v-model="form.accountNumber"
+              placeholder="请选择科目编号"
+              filterable
+            >
+              <el-option
+                v-for="item in allAccounts"
+                :key="item.accountNumber"
+                :label="item.accountNumber"
+                :value="item.accountNumber"
+              >
+                <span style="float: left">{{ item.accountNumber }}</span>
+                <span style="float: left; color: #8492a6">{{ item.description }}</span>
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="银行账号编号" prop="bankNumber">
-            <el-cascader v-model="form.bankNumber" :props="cascaderProps" :show-all-levels="false" />
+            <el-select
+              v-model="form.bankNumber"
+              placeholder="请选择银行科目编号"
+              filterable
+            >
+              <el-option
+                v-for="item in bankAccounts"
+                :key="item.accountNumber"
+                :label="item.accountNumber"
+                :value="item.accountNumber"
+              >
+                <span style="float: left">{{ item.accountNumber }}</span>
+                <span style="float: left; color: #8492a6">{{ item.description }}</span>
+              </el-option>
+            </el-select>
           </el-form-item>
           <el-form-item label="记账凭证编号" prop="certificateNumber">
             <el-input v-model="form.certificateNumber" style="width: 370px;" />
@@ -110,7 +174,7 @@ import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import MoneyInput from '@/views/components/MoneyInput'
 import { formatCurrency } from '@/api/keyuan/formatter'
-import crudSysProjectAccount from '@/api/keyuan/sysProjectAccount'
+import { getAccounts } from '@/api/keyuan/sysProjectAccount'
 
 const defaultForm = { id: null, comment: null, amount: null, direction: null, accountNumber: null, bankNumber: null, certificateNumber: null, transactionTime: null, createBy: null, updateBy: null, createTime: null, updateTime: null }
 export default {
@@ -172,12 +236,16 @@ export default {
         { key: 'bankNumber', display_name: '银行账号编号（关联银行账户）' },
         { key: 'certificateNumber', display_name: '记账凭证编号' }
       ],
-      cascaderProps: {
-        lazy: true,
-        emitPath: false,
-        lazyLoad: (node, resolve) => this.getAccountDataForSelect(node, resolve)
-      }
+      allAccounts: [],
+      bankAccounts: []
     }
+  },
+  created() {
+    getAccounts({ hasChildren: false }).then(res => {
+      // 仅保留叶子节点
+      this.allAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('1001'))
+      this.bankAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('9001'))
+    })
   },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
@@ -186,15 +254,6 @@ export default {
     },
     currencyFormatter(row, column, value) {
       return formatCurrency(value)
-    },
-    getAccountDataForSelect(node, resolve) {
-      let params = {}
-      if (!node.root) {
-        params = { parent: node.data.accountNumber }
-      }
-      crudSysProjectAccount.getAccounts(params).then(res => {
-        resolve(res.content)
-      })
     }
   }
 }
