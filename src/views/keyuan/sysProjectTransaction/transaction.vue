@@ -34,7 +34,7 @@
           <el-option
             v-for="item in allAccounts"
             :key="item.accountNumber"
-            :label="item.accountNumber"
+            :label="item.accountNumber+'-'+item.description"
             :value="item.accountNumber"
           >
             <span style="float: left">{{ item.accountNumber }}</span>
@@ -54,7 +54,7 @@
           <el-option
             v-for="item in bankAccounts"
             :key="item.accountNumber"
-            :label="item.accountNumber"
+            :label="item.accountNumber+'-'+item.description"
             :value="item.accountNumber"
           >
             <span style="float: left">{{ item.accountNumber }}</span>
@@ -94,7 +94,7 @@
               <el-option
                 v-for="item in allAccounts"
                 :key="item.accountNumber"
-                :label="item.accountNumber"
+                :label="item.accountNumber+'-'+item.description"
                 :value="item.accountNumber"
               >
                 <span style="float: left">{{ item.accountNumber }}</span>
@@ -111,7 +111,7 @@
               <el-option
                 v-for="item in bankAccounts"
                 :key="item.accountNumber"
-                :label="item.accountNumber"
+                :label="item.accountNumber+'-'+item.description"
                 :value="item.accountNumber"
               >
                 <span style="float: left">{{ item.accountNumber }}</span>
@@ -142,8 +142,22 @@
             {{ dict.label.transaction_direction[scope.row.direction] }}
           </template>
         </el-table-column>
-        <el-table-column prop="accountNumber" label="科目编号" />
-        <el-table-column prop="bankNumber" label="银行科目号编号" />
+        <el-table-column label="科目信息">
+          <template #default="{ row }">
+            <div>{{ row.accountNumber }}</div>
+            <div style="color: #8492a6; font-size: 12px; margin-top: 4px">
+              {{ allAccountsMap[row.accountNumber] }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="银行科目号编号">
+          <template #default="{ row }">
+            <div>{{ row.bankNumber }}</div>
+            <div style="color: #8492a6; font-size: 12px; margin-top: 4px">
+              {{ allAccountsMap[row.bankNumber] }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="certificateNumber" label="记账凭证编号" />
         <el-table-column prop="transactionTime" label="交易时间" />
         <el-table-column prop="createBy" label="创建人" />
@@ -237,7 +251,8 @@ export default {
         { key: 'certificateNumber', display_name: '记账凭证编号' }
       ],
       allAccounts: [],
-      bankAccounts: []
+      bankAccounts: [],
+      allAccountsMap: {}
     }
   },
   created() {
@@ -245,6 +260,10 @@ export default {
       // 仅保留叶子节点
       this.allAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('1001'))
       this.bankAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('9001'))
+      this.allAccountsMap = res.content.slice().reduce(function(map, obj) {
+        map[obj.accountNumber] = obj.description
+        return map
+      }, {})
     })
   },
   methods: {
