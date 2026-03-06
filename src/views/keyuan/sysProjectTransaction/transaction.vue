@@ -210,7 +210,7 @@ export default {
       title: '项目收支信息',
       url: 'api/sysProjectTransaction',
       idField: 'id',
-      sort: 'id,desc',
+      sort: 'transactionTime,desc',
       crudMethod: { ...crudSysProjectTransaction }})
   },
   data() {
