@@ -1,6 +1,11 @@
 <template>
-  <div>
-    <Summary summary-type="person" />
+  <div class="head-container">
+    <div>
+      <Summary summary-type="dept" />
+    </div>
+    <div>
+      <Summary summary-type="branch" />
+    </div>
   </div>
 </template>
 

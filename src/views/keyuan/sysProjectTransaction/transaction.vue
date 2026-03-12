@@ -5,12 +5,13 @@
       <div v-if="crud.props.searchToggle">
         <!-- 搜索 -->
         <label class="el-form-item-label">摘要</label>
-        <el-input v-model="query.comment" clearable placeholder="摘要" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
+        <el-input v-model="query.comment" clearable placeholder="摘要" style="width: 100px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
         <label class="el-form-item-label">类型</label>
         <el-select
           v-model="query.direction"
           clearable
           placeholder="请选择"
+          style="width: 100px;"
           class="filter-item"
           @keyup.enter.native="crud.toQuery"
         >
@@ -63,6 +64,8 @@
         </el-select>
         <label class="el-form-item-label">记账凭证编号</label>
         <el-input v-model="query.certificateNumber" clearable placeholder="记账凭证编号" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
+        <label class="el-form-item-label">交易时间</label>
+        <date-range-picker v-model="query.transactionTime" style="width: 185px;" class="filter-item" />
         <rrOperation :crud="crud" />
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
@@ -123,7 +126,7 @@
             <el-input v-model="form.certificateNumber" style="width: 370px;" />
           </el-form-item>
           <el-form-item label="交易时间" prop="transactionTime">
-            <el-date-picker v-model="form.transactionTime" type="datetime"/>
+            <el-date-picker v-model="form.transactionTime" type="datetime" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -187,13 +190,14 @@ import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import MoneyInput from '@/views/components/MoneyInput'
+import DateRangePicker from '@/components/DateRangePicker'
 import { formatCurrency } from '@/api/keyuan/formatter'
 import { getAccounts } from '@/api/keyuan/sysProjectAccount'
 
 const defaultForm = { id: null, comment: null, amount: null, direction: null, accountNumber: null, bankNumber: null, certificateNumber: null, transactionTime: null, createBy: null, updateBy: null, createTime: null, updateTime: null }
 export default {
   name: 'SysProjectTransaction',
-  components: { MoneyInput, pagination, crudOperation, rrOperation, udOperation },
+  components: { MoneyInput, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
   mixins: [presenter(), header(), form(defaultForm), crud()],
   dicts: ['transaction_direction'],
   props: {

@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
-export function getSummary(begin, end, person) {
+export function getSummary(begin, end, type) {
   return request({
-    url: 'api/sysProjectTransaction/summary?begin=' + begin + '&end=' + end + '&person=' + person,
+    url: 'api/sysProjectTransaction/summary?begin=' + begin + '&end=' + end + '&type=' + type,
     method: 'get'
   })
 }

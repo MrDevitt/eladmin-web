@@ -3,7 +3,7 @@
     <!-- 顶部筛选区 -->
     <el-card class="filter-card">
       <div class="filter-header">
-        <h2>{{ person?'业务人余额表':'科目余额表' }}</h2>
+        <h2>{{ getTitle() }}</h2>
         <div class="date-picker">
           <date-range-picker v-model="dateRange" @change="handleDateChange" />
         </div>
@@ -12,7 +12,7 @@
       <el-table
         :data="treeData"
         row-key="accountNumber"
-        :expand-row-keys="person?['10010103']:dict.transaction_expand_key.map(e => e.value)"
+        :expand-row-keys="getExpandKey()"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         border
         style="width: 100%"
@@ -37,8 +37,8 @@
           <el-table-column prop="endExpense" label="支出" :formatter="currencyFormatter" />
           <el-table-column prop="endRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
-        <el-table-column v-if="person" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
-        <el-table-column v-if="person" prop="guaranteeAmount" label="担保金额" :formatter="currencyFormatter" />
+        <el-table-column v-if="summaryType==='person'" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
+        <el-table-column v-if="summaryType==='person'" prop="guaranteeAmount" label="担保金额" :formatter="currencyFormatter" />
       </el-table>
       <!-- 明细表格（隐藏） -->
       <el-card v-if="showDetails" class="details-card">
@@ -64,9 +64,9 @@ export default {
   components: { SysProjectTransaction, DateRangePicker },
   dicts: ['transaction_expand_key'],
   props: {
-    person: {
-      type: Boolean,
-      default: false
+    summaryType: {
+      type: String,
+      default: 'all'
     }
   },
   data() {
@@ -111,11 +111,36 @@ export default {
     fetchSummary() {
       this.curd.defaultQuery.transactionTime = this.dateRange
       this.curd.query.transactionTime = this.dateRange
-      getSummary(this.dateRange[0], this.dateRange[1], this.person).then(res => {
+      getSummary(this.dateRange[0], this.dateRange[1], this.summaryType).then(res => {
         this.treeData = res.slice()
       }).catch(e => {
         console.error('获取科目汇总失败:', e)
       })
+    },
+    getTitle() {
+      if (this.summaryType === 'person') {
+        return '业务人余额表'
+      }
+      if (this.summaryType === 'dept') {
+        return '部门余额表'
+      }
+      if (this.summaryType === 'branch') {
+        return '分公司余额表'
+      }
+      return '科目余额表'
+    },
+    getExpandKey() {
+      console.log(this)
+      if (this.summaryType === 'person') {
+        return ['10010103']
+      }
+      if (this.summaryType === 'dept') {
+        return ['10010102']
+      }
+      if (this.summaryType === 'branch') {
+        return ['10010104']
+      }
+      return this.dict.transaction_expand_key.map(e => e.value)
     }
   }
 }
