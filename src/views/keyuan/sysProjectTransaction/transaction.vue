@@ -22,6 +22,26 @@
             :value="parseInt(item.value)"
           />
         </el-select>
+        <label v-if="summaryCrud==null" class="el-form-item-label">父科目编号</label>
+        <el-select
+          v-if="summaryCrud==null"
+          v-model="query.parentAccountNumber"
+          placeholder="请选择父科目编号"
+          filterable
+          clearable
+          class="filter-item"
+          @keyup.enter.native="crud.toQuery"
+        >
+          <el-option
+            v-for="item in parentAccounts"
+            :key="item.accountNumber"
+            :label="item.accountNumber+'-'+item.description"
+            :value="item.accountNumber"
+          >
+            <span style="float: left">{{ item.accountNumber }}</span>
+            <span style="float: left; color: #8492a6">{{ item.description }}</span>
+          </el-option>
+        </el-select>
         <label v-if="summaryCrud==null" class="el-form-item-label">科目编号</label>
         <el-select
           v-if="summaryCrud==null"
@@ -254,16 +274,18 @@ export default {
         { key: 'bankNumber', display_name: '银行账号编号（关联银行账户）' },
         { key: 'certificateNumber', display_name: '记账凭证编号' }
       ],
-      allAccounts: [],
+      allAccounts: [], // 仅子科目，暂未改名
+      parentAccounts: [],
       bankAccounts: [],
       allAccountsMap: {}
     }
   },
   created() {
-    getAccounts({ hasChildren: false }).then(res => {
+    getAccounts({ queryAll: true }).then(res => {
       // 仅保留叶子节点
-      this.allAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('1001'))
-      this.bankAccounts = res.content.slice().filter(e => String(e.accountNumber).startsWith('9001'))
+      this.allAccounts = res.content.slice().filter(e => !e.hasChildren && String(e.accountNumber).startsWith('1001'))
+      this.parentAccounts = res.content.slice().filter(e => e.hasChildren)
+      this.bankAccounts = res.content.slice().filter(e => !e.hasChildren && String(e.accountNumber).startsWith('9001'))
       this.allAccountsMap = res.content.slice().reduce(function(map, obj) {
         map[obj.accountNumber] = obj.description
         return map

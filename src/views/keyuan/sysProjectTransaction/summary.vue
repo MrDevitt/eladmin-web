@@ -83,6 +83,9 @@ export default {
           download: true,
           reset: true
         },
+        params: {
+          blackListEnable: true
+        },
         crudMethod: { ...crudSysProjectTransaction }}),
       treeData: []
     }
@@ -130,7 +133,6 @@ export default {
       return '科目余额表'
     },
     getExpandKey() {
-      console.log(this)
       if (this.summaryType === 'person') {
         return ['10010103']
       }
