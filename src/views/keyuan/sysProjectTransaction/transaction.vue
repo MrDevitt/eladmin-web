@@ -91,69 +91,115 @@
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
       <crudOperation :permission="permission" />
       <!--表单组件-->
-      <el-dialog :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="500px">
-        <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
-          <el-form-item label="摘要" prop="comment">
-            <el-input v-model="form.comment" style="width: 370px;" />
-          </el-form-item>
-          <el-form-item label="金额" prop="amount">
-            <money-input v-model="form.amount" style="width: 370px;" />
-          </el-form-item>
-          <el-form-item label="交易类型" prop="direction">
-            <el-select v-model="form.direction" filterable placeholder="请选择">
-              <el-option
-                v-for="item in dict.transaction_direction"
-                :key="item.id"
-                :label="item.label"
-                :value="parseInt(item.value)" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="科目编号" prop="accountNumber">
-            <el-select
-              v-model="form.accountNumber"
-              placeholder="请选择科目编号"
-              filterable
-            >
-              <el-option
-                v-for="item in allAccounts"
-                :key="item.accountNumber"
-                :label="item.accountNumber+'-'+item.description"
-                :value="item.accountNumber"
-              >
-                <span style="float: left">{{ item.accountNumber }}</span>
-                <span style="float: left; color: #8492a6">{{ item.description }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="银行账号编号" prop="bankNumber">
-            <el-select
-              v-model="form.bankNumber"
-              placeholder="请选择银行科目编号"
-              filterable
-            >
-              <el-option
-                v-for="item in bankAccounts"
-                :key="item.accountNumber"
-                :label="item.accountNumber+'-'+item.description"
-                :value="item.accountNumber"
-              >
-                <span style="float: left">{{ item.accountNumber }}</span>
-                <span style="float: left; color: #8492a6">{{ item.description }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="记账凭证编号" prop="certificateNumber">
-            <el-input v-model="form.certificateNumber" style="width: 370px;" />
-          </el-form-item>
-          <el-form-item label="交易时间" prop="transactionTime">
-            <el-date-picker v-model="form.transactionTime" type="datetime" />
-          </el-form-item>
+      <el-dialog :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="900px">
+        <el-form ref="form" :model="form" :rules="rules" size="small" label-width="100px">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="记账凭证" prop="certificateNumber">
+                <el-input v-model="form.certificateNumber" style="width: 100%;" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="交易时间" prop="transactionTime">
+                <el-date-picker v-model="form.transactionTime" type="datetime" style="width: 100%;" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-button type="primary" size="mini" icon="el-icon-plus" style="margin-bottom: 10px;" @click="addRow">添加明细</el-button>
+          <el-table :data="form.details" size="small" stripe >
+            <el-table-column label="摘要" width="150" align="center">
+              <template slot-scope="scope">
+                <el-form-item :prop="'details.' + scope.$index + '.comment'" :rules="rules.comment" label-width="0" style="margin-bottom: 0;">
+                  <el-input v-model="scope.row.comment" placeholder="摘要" />
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column label="金额" width="150" align="center">
+              <template slot-scope="scope">
+                <el-form-item :prop="'details.' + scope.$index + '.amount'" :rules="rules.amount" label-width="0" style="margin-bottom: 0;">
+                  <money-input v-model="scope.row.amount" />
+                </el-form-item>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="交易类型" width="110" align="center">
+              <template slot-scope="scope">
+                <el-form-item :prop="'details.' + scope.$index + '.direction'" :rules="rules.direction" label-width="0" style="margin-bottom: 0;">
+                  <el-select v-model="scope.row.direction" filterable placeholder="类型">
+                    <el-option v-for="item in dict.transaction_direction" :key="item.id" :label="item.label" :value="parseInt(item.value)" />
+                  </el-select>
+                </el-form-item>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="科目编号" width="160" align="center">
+              <template slot-scope="scope">
+                <el-form-item :prop="'details.' + scope.$index + '.accountNumber'" :rules="rules.accountNumber" label-width="0" style="margin-bottom: 0;">
+                  <el-select v-model="scope.row.accountNumber" filterable placeholder="请选择科目">
+                    <el-option
+                      v-for="item in allAccounts"
+                      :key="item.accountNumber"
+                      :label="item.accountNumber+'-'+item.description"
+                      :value="item.accountNumber"
+                    >
+                      <span style="float: left">{{ item.accountNumber }}</span>
+                      <span style="float: left; color: #8492a6">{{ item.description }}</span>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+            </el-table-column>
+            <el-table-column label="银行账号编号" width="160" align="center">
+              <template slot-scope="scope">
+                <el-form-item :prop="'details.' + scope.$index + '.bankNumber'" :rules="rules.bankNumber" label-width="0" style="margin-bottom: 0;">
+                  <el-select v-model="scope.row.bankNumber" filterable placeholder="请选择银行">
+                    <el-option
+                      v-for="item in bankAccounts"
+                      :key="item.accountNumber"
+                      :label="item.accountNumber+'-'+item.description"
+                      :value="item.accountNumber"
+                    >
+                      <span style="float: left">{{ item.accountNumber }}</span>
+                      <span style="float: left; color: #8492a6">{{ item.description }}</span>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作" width="100%" align="center">
+              <template slot-scope="scope">
+                <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="removeRow(scope.$index)" />
+              </template>
+            </el-table-column>
+          </el-table>
         </el-form>
+        <!-- 总计信息 -->
+        <div class="summary-info">
+          <div class="summary-item">
+            <span>总笔数：</span>
+            <strong>{{ form.details.length }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>收入合计：</span>
+            <strong style="color: green;">{{ currencyFormatter(0,0,incomeTotal) }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>支出合计：</span>
+            <strong style="color: red;">{{ currencyFormatter(0,0,expenseTotal) }}</strong>
+          </div>
+          <div class="summary-item">
+            <span>净额：</span>
+            <strong :style="{ color: netAmount >= 0 ? 'green' : 'red' }">{{ currencyFormatter(0,0,netAmount) }}</strong>
+          </div>
+        </div>
+
         <div slot="footer" class="dialog-footer">
           <el-button type="text" @click="crud.cancelCU">取消</el-button>
           <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
         </div>
       </el-dialog>
+<!--      <batch-transaction-dialog :crud="crud" :all-accounts="allAccounts" :bank-accounts="bankAccounts" />-->
       <!--表格渲染-->
       <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
         <el-table-column type="selection" width="55" />
@@ -214,7 +260,22 @@ import DateRangePicker from '@/components/DateRangePicker'
 import { formatCurrency } from '@/api/keyuan/formatter'
 import { getAccounts } from '@/api/keyuan/sysProjectAccount'
 
-const defaultForm = { id: null, comment: null, amount: null, direction: null, accountNumber: null, bankNumber: null, certificateNumber: null, transactionTime: null, createBy: null, updateBy: null, createTime: null, updateTime: null }
+const defaultForm = {
+  id: null,
+  comment: null,
+  amount: null,
+  direction: null,
+  accountNumber: null,
+  bankNumber: null,
+  certificateNumber: null,
+  transactionTime: null,
+  createBy: null,
+  updateBy: null,
+  createTime: null,
+  updateTime: null,
+  details: []
+}
+
 export default {
   name: 'SysProjectTransaction',
   components: { MoneyInput, pagination, crudOperation, rrOperation, udOperation, DateRangePicker },
@@ -292,6 +353,24 @@ export default {
       }, {})
     })
   },
+  computed: {
+    // 计算属性：收入总额
+    incomeTotal() {
+      return this.form.details
+        .filter(detail => detail.direction === 0) // 假设0为收入
+        .reduce((sum, detail) => sum + (detail.amount || 0), 0)
+    },
+    // 计算属性：支出总额
+    expenseTotal() {
+      return this.form.details
+        .filter(detail => detail.direction === 1) // 假设1为支出
+        .reduce((sum, detail) => sum + (detail.amount || 0), 0)
+    },
+    // 计算属性：净额
+    netAmount() {
+      return this.incomeTotal - this.expenseTotal
+    }
+  },
   methods: {
     // 钩子：在获取表格数据之前执行，false 则代表不获取数据
     [CRUD.HOOK.beforeRefresh]() {
@@ -299,11 +378,70 @@ export default {
     },
     currencyFormatter(row, column, value) {
       return formatCurrency(value)
+    },
+    addRow() {
+      if (!this.form.details) {
+        this.$set(this.form, 'details', [])
+      }
+      this.form.details.push({
+        comment: null,
+        amount: null,
+        direction: null,
+        accountNumber: null,
+        bankNumber: null
+      })
+    },
+    // 删除特定行
+    removeRow(index) {
+      if (!this.form.details || this.form.details.length === 1) {
+        this.$message.warning('至少保留一条交易明细！')
+        return
+      }
+      this.form.details.splice(index, 1)
+    },
+
+    // CRUD 钩子：在打开新增弹窗前，默认给个空行
+    [CRUD.HOOK.beforeToAdd]() {
+      this.form.details = []
+      this.addRow()
+      return true
+    },
+    // 🚀 新增：CRUD 钩子：在打开编辑弹窗前，将单行数据映射到 details 中
+    [CRUD.HOOK.beforeToEdit](crud, form) {
+      // 当你点击某一行数据的“编辑”时，把这一行的明细字段放进 details 数组的第一项
+      form.details = [{
+        id: form.id, // ⚠️ 划重点：编辑时一定要带上明细的 ID，不然变成新增了
+        comment: form.comment,
+        amount: form.amount,
+        direction: form.direction,
+        accountNumber: form.accountNumber,
+        bankNumber: form.bankNumber
+      }]
+      return true
+    },
+    // CRUD 钩子：提交前的拦截处理
+    [CRUD.HOOK.beforeSubmit]() {
+      if (!this.form.details || this.form.details.length === 0) {
+        this.$message.warning('请至少添加一条交易明细！')
+        return false
+      }
+      return true
     }
   }
 }
 </script>
 
 <style scoped>
+.summary-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
 
+.summary-item {
+  text-align: center;
+}
 </style>
