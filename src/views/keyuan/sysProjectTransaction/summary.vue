@@ -81,7 +81,6 @@ export default {
         sort: 'transactionTime,desc',
         optShow: {
           download: true,
-          reset: true
         },
         params: {
           blackListEnable: true

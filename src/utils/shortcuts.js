@@ -22,16 +22,31 @@ export const calendarBaseShortcuts = [{
     picker.$emit('pick', [startTime, endTime])
   }
 }, {
-  text: '这个月',
+  text: '本月',
   onClick(picker) {
     const startTime = new Date(new Date().monthBegin().setHours(0, 0, 0))
     const endTime = new Date(new Date().setHours(23, 59, 59))
     picker.$emit('pick', [startTime, endTime])
   }
 }, {
+  text: '本年',
+  onClick(picker) {
+    const startTime = new Date(new Date().getFullYear(), 0, 1, 0, 0, 0)
+    const endTime = new Date(new Date().setHours(23, 59, 59))
+    picker.$emit('pick', [startTime, endTime])
+  }
+}, {
+  text: '上月',
+  onClick(picker) {
+    const now = new Date()
+    const startTime = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const endTime = new Date(new Date(now.getFullYear(), now.getMonth(), 1).getTime() - 1)
+    picker.$emit('pick', [startTime, endTime])
+  }
+}, {
   text: '当前季度',
   onClick(picker) {
-    const startTime = new Date(new Date().quarterBegin().setHours(0, 0, 0))
+    const startTime = new Date(new Date().yearBegin().setHours(0, 0, 0))
     const endTime = new Date(new Date().setHours(23, 59, 59))
     picker.$emit('pick', [startTime, endTime])
   }

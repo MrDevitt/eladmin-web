@@ -85,7 +85,7 @@
         <label class="el-form-item-label">记账凭证编号</label>
         <el-input v-model="query.certificateNumber" clearable placeholder="记账凭证编号" style="width: 185px;" class="filter-item" @keyup.enter.native="crud.toQuery" />
         <label class="el-form-item-label">交易时间</label>
-        <date-range-picker v-model="query.transactionTime" style="width: 185px;" class="filter-item" />
+        <date-range-picker v-if="summaryCrud==null" v-model="query.transactionTime" style="width: 185px;" class="filter-item" />
         <rrOperation :crud="crud" />
       </div>
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
