@@ -19,7 +19,22 @@
         :indent="8"
         @row-click="handleRowClick"
       >
-        <el-table-column prop="accountNumber" label="科目编号" :min-width="100" show-overflow-tooltip />
+        <el-table-column label="科目编号" :min-width="140" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span style="margin-right: 10px;">{{ scope.row.accountNumber }}</span>
+            <el-button
+              v-if="scope.row.children && scope.row.children.length > 0 && String(scope.row.accountNumber).startsWith('1001')"
+              type="primary"
+              size="mini"
+              icon="el-icon-download"
+              circle
+              plain
+              title="导出统计与明细"
+              :loading="downloadLoading"
+              @click.stop="handleExportRow(scope.row)"
+            />
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="科目名称" :min-width="120" show-overflow-tooltip />
         <el-table-column prop="initialAmount" label="初始余额" :formatter="currencyFormatter" />
         <el-table-column label="期初余额" align="center">
@@ -58,6 +73,8 @@ import DateRangePicker from '@/components/DateRangePicker'
 import { formatCurrency } from '@/api/keyuan/formatter'
 import SysProjectTransaction from '@/views/keyuan/sysProjectTransaction/transaction'
 import CRUD from '@crud/crud'
+import { download } from '@/api/data'
+import { downloadFile } from '@/utils'
 
 export default {
   name: 'Summary',
@@ -86,7 +103,8 @@ export default {
           blackListEnable: true
         },
         crudMethod: { ...crudSysProjectTransaction }}),
-      treeData: []
+      treeData: [],
+      downloadLoading: false
     }
   },
   mounted() {
@@ -142,6 +160,21 @@ export default {
         return ['10010104']
       }
       return this.dict.transaction_expand_key.map(e => e.value)
+    },
+    handleExportRow(row) {
+      this.downloadLoading = true
+      download('/api/sysProjectTransaction/summary/download',
+        {
+          'begin': this.dateRange[0],
+          'end': this.dateRange[1],
+          'accountNumber': row.accountNumber
+        }).then(result => {
+        downloadFile(result, '余额表数据-' + row.accountNumber, 'xlsx')
+        this.downloadLoading = false
+      }).catch((e) => {
+        this.$message.error(e)
+        this.downloadLoading = false
+      })
     }
   }
 }
