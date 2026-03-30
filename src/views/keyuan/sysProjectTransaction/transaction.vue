@@ -91,7 +91,7 @@
       <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
       <crudOperation :permission="permission" />
       <!--表单组件-->
-      <el-dialog :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="900px">
+      <el-dialog :before-close="crud.cancelCU" :close-on-click-modal="false" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="80%">
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="100px">
           <el-row>
             <el-col :span="12">
@@ -107,14 +107,14 @@
           </el-row>
           <el-button type="primary" size="mini" icon="el-icon-plus" style="margin-bottom: 10px;" @click="addRow">添加明细</el-button>
           <el-table :data="form.details" size="small" stripe >
-            <el-table-column label="摘要" width="150" align="center">
+            <el-table-column label="摘要" min-width="300" align="center">
               <template slot-scope="scope">
                 <el-form-item :prop="'details.' + scope.$index + '.comment'" :rules="rules.comment" label-width="0" style="margin-bottom: 0;">
                   <el-input v-model="scope.row.comment" placeholder="摘要" />
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column label="金额" width="150" align="center">
+            <el-table-column label="金额" min-width="150" align="center">
               <template slot-scope="scope">
                 <el-form-item :prop="'details.' + scope.$index + '.amount'" :rules="rules.amount" label-width="0" style="margin-bottom: 0;">
                   <money-input v-model="scope.row.amount" />
@@ -122,7 +122,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="交易类型" width="110" align="center">
+            <el-table-column label="交易类型" min-width="80" align="center">
               <template slot-scope="scope">
                 <el-form-item :prop="'details.' + scope.$index + '.direction'" :rules="rules.direction" label-width="0" style="margin-bottom: 0;">
                   <el-select v-model="scope.row.direction" filterable placeholder="类型">
@@ -132,14 +132,14 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="科目编号" width="160" align="center">
+            <el-table-column label="科目编号" min-width="250" align="center">
               <template slot-scope="scope">
                 <el-form-item :prop="'details.' + scope.$index + '.accountNumber'" :rules="rules.accountNumber" label-width="0" style="margin-bottom: 0;">
-                  <el-select v-model="scope.row.accountNumber" filterable placeholder="请选择科目">
+                  <el-select v-model="scope.row.accountNumber" filterable placeholder="请选择科目" style="width: 100%;">
                     <el-option
                       v-for="item in allAccounts"
                       :key="item.accountNumber"
-                      :label="item.accountNumber+'-'+item.description"
+                      :label="item.description+'-'+item.accountNumber"
                       :value="item.accountNumber"
                     >
                       <span style="float: left">{{ item.accountNumber }}</span>
@@ -149,14 +149,14 @@
                 </el-form-item>
               </template>
             </el-table-column>
-            <el-table-column label="银行账号编号" width="160" align="center">
-              <template slot-scope="scope">
+            <el-table-column label="银行账号编号" min-width="250" align="center">
+              <template slot-scope="scope" >
                 <el-form-item :prop="'details.' + scope.$index + '.bankNumber'" :rules="rules.bankNumber" label-width="0" style="margin-bottom: 0;">
-                  <el-select v-model="scope.row.bankNumber" filterable placeholder="请选择银行">
+                  <el-select v-model="scope.row.bankNumber" filterable placeholder="请选择银行" style="width: 100%;">
                     <el-option
                       v-for="item in bankAccounts"
                       :key="item.accountNumber"
-                      :label="item.accountNumber+'-'+item.description"
+                      :label="item.description+'-'+item.accountNumber"
                       :value="item.accountNumber"
                     >
                       <span style="float: left">{{ item.accountNumber }}</span>
