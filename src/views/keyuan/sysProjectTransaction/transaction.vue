@@ -166,6 +166,13 @@
                 </el-form-item>
               </template>
             </el-table-column>
+            <el-table-column label="备注" min-width="250" align="center">
+              <template slot-scope="scope" >
+                <el-form-item :prop="'details.' + scope.$index + '.remark'" label-width="0" style="margin-bottom: 0;">
+                  <el-input v-model="scope.row.remark" type="textarea" />
+                </el-form-item>
+              </template>
+            </el-table-column>
 
             <el-table-column label="操作" width="100%" align="center">
               <template slot-scope="scope">
@@ -199,7 +206,6 @@
           <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
         </div>
       </el-dialog>
-<!--      <batch-transaction-dialog :crud="crud" :all-accounts="allAccounts" :bank-accounts="bankAccounts" />-->
       <!--表格渲染-->
       <el-table ref="table" v-loading="crud.loading" :data="crud.data" size="small" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
         <el-table-column type="selection" width="55" />
@@ -229,6 +235,7 @@
         </el-table-column>
         <el-table-column prop="certificateNumber" label="记账凭证编号" />
         <el-table-column prop="transactionTime" label="交易时间" />
+        <el-table-column prop="remark" label="备注" />
         <el-table-column prop="createBy" label="创建人" />
         <el-table-column prop="updateBy" label="修改人" />
         <el-table-column prop="createTime" label="创建时间" />
@@ -415,7 +422,8 @@ export default {
         amount: form.amount,
         direction: form.direction,
         accountNumber: form.accountNumber,
-        bankNumber: form.bankNumber
+        bankNumber: form.bankNumber,
+        remark: form.remark
       }]
       return true
     },
