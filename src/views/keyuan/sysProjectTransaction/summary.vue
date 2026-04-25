@@ -36,23 +36,23 @@
           </template>
         </el-table-column>
         <el-table-column prop="name" label="科目名称" :min-width="120" show-overflow-tooltip />
-        <el-table-column prop="initialAmount" label="初始余额" :formatter="currencyFormatter" />
-        <el-table-column label="期初余额" align="center">
-          <el-table-column prop="beginIncome" label="收入" :formatter="currencyFormatter" />
-          <el-table-column prop="beginExpense" label="支出" :formatter="currencyFormatter" />
-          <el-table-column prop="beginRemain" label="结余" :formatter="currencyFormatter" />
+        <el-table-column prop="initialAmount" :label="summaryType==='all'?'初始余额':'往年盈亏'" :formatter="currencyFormatter" />
+        <el-table-column v-if="summaryType==='all'" label="期初余额" align="center">
+          <el-table-column v-if="summaryType==='all'" prop="beginIncome" label="收入" :formatter="currencyFormatter" />
+          <el-table-column v-if="summaryType==='all'" prop="beginExpense" label="支出" :formatter="currencyFormatter" />
+          <el-table-column v-if="summaryType==='all'" prop="beginRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
-        <el-table-column label="本期余额" align="center">
+        <el-table-column :label="summaryType==='all'?'本期余额':'本期盈亏'" align="center">
           <el-table-column prop="currentIncome" label="收入" :formatter="currencyFormatter" />
           <el-table-column prop="currentExpense" label="支出" :formatter="currencyFormatter" />
           <el-table-column prop="currentRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
-        <el-table-column label="期末余额" align="center">
+        <el-table-column :label="summaryType==='all'?'期末余额':'累计盈亏'" align="center">
           <el-table-column prop="endIncome" label="收入" :formatter="currencyFormatter" />
           <el-table-column prop="endExpense" label="支出" :formatter="currencyFormatter" />
           <el-table-column prop="endRemain" label="结余" :formatter="currencyFormatter" />
         </el-table-column>
-        <el-table-column v-if="summaryType==='person'" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
+        <el-table-column v-if="summaryType!=='all'" prop="remainingShare" label="未收款提成" :formatter="currencyFormatter" />
         <el-table-column v-if="summaryType==='person'" prop="guaranteeAmount" label="担保金额" :formatter="currencyFormatter" />
       </el-table>
       <!-- 明细表格（隐藏） -->
@@ -139,13 +139,13 @@ export default {
     },
     getTitle() {
       if (this.summaryType === 'person') {
-        return '业务人余额表'
+        return '业务人盈亏表'
       }
       if (this.summaryType === 'dept') {
-        return '部门余额表'
+        return '部门盈亏表'
       }
       if (this.summaryType === 'branch') {
-        return '分公司余额表'
+        return '分公司盈亏表'
       }
       return '科目余额表'
     },
