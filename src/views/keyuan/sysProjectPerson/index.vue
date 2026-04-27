@@ -35,6 +35,9 @@
           <el-form-item label="收入科目编号" prop="accountNumber">
             <el-input v-model="form.accountNumber" style="width: 370px;"/>
           </el-form-item>
+          <el-form-item label="钉钉userId" prop="dingTalkUserId">
+            <el-input v-model="form.dingTalkUserId" style="width: 370px;"/>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button type="text" @click="crud.cancelCU">取消</el-button>
@@ -55,6 +58,7 @@
         <el-table-column prop="name" label="姓名"/>
         <el-table-column prop="phoneNumber" label="手机号"/>
         <el-table-column prop="accountNumber" label="收入科目编号"/>
+        <el-table-column prop="dingTalkUserId" label="钉钉userId"/>
         <el-table-column prop="createTime" label="创建时间"/>
         <el-table-column prop="updateTime" label="更新时间"/>
         <el-table-column
@@ -90,6 +94,7 @@ const defaultForm = {
   name: null,
   phoneNumber: null,
   accountNumber: null,
+  dingTalkUserId: null,
   createTime: null,
   updateTime: null
 }

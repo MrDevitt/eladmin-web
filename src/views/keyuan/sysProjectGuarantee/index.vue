@@ -4,19 +4,11 @@
       <div slot="header" class="card-header">
         <span>项目担保统计</span>
       </div>
-      <el-table :data="guaranteeData" show-summary :row-style="getRowStyle">
+      <el-table :data="guaranteeData" show-summary >
         <el-table-column prop="name" label="业务人"/>
         <el-table-column prop="normal" label="担保中" :formatter="formatCurrency" />
         <el-table-column prop="abnormal" label="逾期" :formatter="formatCurrency" />
         <el-table-column prop="sum" label="合计" :formatter="formatCurrency" />
-        <el-table-column prop="remaining" :formatter="formatCurrency">
-          <template v-slot:header>
-            <span>担保余额</span>
-            <el-tooltip class="item" effect="dark" content="担保余额 = 业务余额 + 未收款提成 - 担保中金额 - 逾期金额" placement="top">
-              <i class="el-icon-question" style="color: #409EFF; margin-left: 5px;"/>
-            </el-tooltip>
-          </template>
-        </el-table-column>
       </el-table>
     </el-card>
     <el-card class="box-card" shadow="always">
@@ -369,12 +361,6 @@ export default {
       const str = num.toString()
       const reg = str.indexOf('.') > -1 ? /(\d)(?=(\d{3})+\.)/g : /(\d)(?=(?:\d{3})+$)/g
       return str.replace(reg, '$1,')
-    },
-    getRowStyle({ row }) {
-      if (Number(row.remaining) < 0) {
-        return { backgroundColor: '#fdecea' }
-      }
-      return {}
     }
   }
 }
