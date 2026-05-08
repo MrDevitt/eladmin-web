@@ -297,10 +297,10 @@
           <el-form-item label="备注">
             <el-input v-model="form.remark" type="textarea" style="width: 370px" />
           </el-form-item>
-          <el-form-item label="业务中心百分比" prop="salesPercent">
+          <el-form-item label="业务占比" prop="salesPercent">
             <el-input-number v-model="form.salesPercent" :min="0" :max="100" :step="5" label="请输入" />
           </el-form-item>
-          <el-form-item label="技术中心百分比" prop="technicalPercent">
+          <el-form-item label="综合部/分公司占比" prop="technicalPercent">
             <el-input-number
               v-model="form.technicalPercent"
               :min="0"
@@ -309,7 +309,7 @@
               label="请输入"
             />
           </el-form-item>
-          <el-form-item label="管理中心百分比" prop="managementPercent">
+          <el-form-item label="总部管理费占比" prop="managementPercent">
             <el-input-number
               v-model="form.managementPercent"
               :min="0"
@@ -318,15 +318,15 @@
               label="请输入"
             />
           </el-form-item>
-          <el-form-item label="总裁办百分比" prop="presidentPercent">
-            <el-input-number
-              v-model="form.presidentPercent"
-              :min="0"
-              :max="100"
-              :step="5"
-              label="请输入"
-            />
-          </el-form-item>
+<!--          <el-form-item label="总裁办百分比" prop="presidentPercent">-->
+<!--            <el-input-number-->
+<!--              v-model="form.presidentPercent"-->
+<!--              :min="0"-->
+<!--              :max="100"-->
+<!--              :step="5"-->
+<!--              label="请输入"-->
+<!--            />-->
+<!--          </el-form-item>-->
           <el-form-item label="创建日期" prop="createTime">
             <el-date-picker
               v-model="form.createTime"
@@ -434,11 +434,13 @@
             </el-dialog>
           </template>
         </el-table-column>
-        <el-table-column prop="salesPercent" label="业务中心百分比" />
-        <el-table-column prop="technicalPercent" label="技术中心百分比" />
-        <el-table-column prop="managementPercent" label="管理中心百分比" />
-        <el-table-column prop="presidentPercent" label="总裁办百分比" />
+        <el-table-column prop="salesPercent" label="业务占比" />
+        <el-table-column prop="technicalPercent" label="综合部/分公司占比" />
+        <el-table-column prop="managementPercent" label="总部管理费占比" />
+<!--        <el-table-column prop="presidentPercent" label="总裁办百分比" />-->
+        <el-table-column prop="createBy" label="创建人" />
         <el-table-column prop="createTime" label="创建时间" />
+        <el-table-column prop="updateBy" label="更新人" />
         <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column
           v-if="checkPer(['admin','sysProjectDetail:edit','sysProjectDetail:del'])"
@@ -493,7 +495,9 @@ const defaultForm = {
   managementPercent: 0,
   presidentPercent: 0,
   receiveAmount: null,
+  createBy: null,
   createTime: null,
+  updateBy: null,
   updateTime: null,
   projectRegion: null,
   contractReceiveTime: null,

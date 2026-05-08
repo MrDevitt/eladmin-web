@@ -56,8 +56,10 @@
         <el-table-column prop="invoiceTime" label="开票时间"/>
         <el-table-column prop="receiveAmount" label="到账金额" :formatter="formatPrice"/>
         <el-table-column prop="receiveTime" label="到账时间"/>
-        <el-table-column prop="createTime" label="创建时间"/>
-        <el-table-column prop="updateTime" label="更新时间"/>
+        <el-table-column prop="createBy" label="创建人" />
+        <el-table-column prop="createTime" label="创建时间" />
+        <el-table-column prop="updateBy" label="更新人" />
+        <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column
           v-if="checkPer(['admin','sysProjectReceive:edit','sysProjectReceive:del'])"
           label="操作"
